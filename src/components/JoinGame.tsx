@@ -2,15 +2,21 @@ import { CheckCircleIcon } from "@heroicons/react/24/solid";
 import { useState } from "react";
 import Modal from "../components/Modal";
 import { trpc } from "../utils/trpc";
+import PlayerCard from "./PlayerCard";
 
 const JoinGame = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const closeModal = () => setModalOpen(false);
   const openModal = () => setModalOpen(true);
 
-  const [inviteId, setInviteId] = useState<string | null>(null);
   const invites = trpc.useQuery(["auth.getReceivedInvites"]);
   const utils = trpc.useContext();
+
+  const rejectInvite = trpc.useMutation(["auth.declineInvite"], {
+    onSuccess: () => {
+      utils.invalidateQueries(["auth.getReceivedInvites"]);
+    },
+  });
 
   const joinGame = trpc.useMutation(["auth.joinGame"], {
     onSuccess: () => {
@@ -18,14 +24,6 @@ const JoinGame = () => {
       utils.invalidateQueries(["auth.getGameInProgress"]);
     },
   });
-
-  const onSubmit = () => {
-    if (inviteId) {
-      joinGame.mutateAsync({ inviteId });
-    }
-  };
-
-  console.log(invites.data, invites.status);
 
   return (
     <>
@@ -35,34 +33,40 @@ const JoinGame = () => {
       <Modal
         isOpen={modalOpen}
         close={closeModal}
-        actions={[
-          {
-            label: "Join",
-            onClick: onSubmit,
-            variant: "primary",
-            disabled: !inviteId,
-          },
-          { label: "Cancel", onClick: closeModal },
-        ]}
+        actions={[{ label: "Cancel", onClick: closeModal }]}
       >
         <>
           <div>
             <h2 className="text-2xl font-bold">Join Game</h2>
             <p className="text-lg">Select a game invite below</p>
           </div>
-          <ul className="w-full border bg-gray-50 rounded-lg overflow-none py-1 h-40 overflow-y-auto">
+          <ul className="w-full border bg-gray-50 rounded-lg overflow-none h-80 overflow-y-auto">
             {invites.data?.map((invite) => (
               <li key={invite.id}>
-                <button
-                  onClick={() => setInviteId(invite.id)}
-                  className="px-4 py-3 w-full text-lg flex flex-row items-center gap-4 hover:bg-gray-100"
-                >
-                  {invite.from.name} invited you to a game
-                  <div className="grow" />
-                  {inviteId === invite.id && (
-                    <CheckCircleIcon className="w-6 text-green-400" />
-                  )}
-                </button>
+                <div className="px-4 py-3 w-full text-lg flex flex-row items-center gap-4 border-b">
+                  <PlayerCard
+                    name={invite.from.name!}
+                    image={invite.from.image!}
+                    elo={invite.from.elo}
+                    // selected={invite.id === inviteId}
+                  />
+                  <button
+                    onClick={() =>
+                      rejectInvite.mutateAsync({ inviteId: invite.id })
+                    }
+                    className="btn btn-outline btn-sm btn-error"
+                  >
+                    Decline
+                  </button>
+                  <button
+                    className="btn btn-sm btn-primary"
+                    onClick={() =>
+                      joinGame.mutateAsync({ inviteId: invite.id })
+                    }
+                  >
+                    Accept
+                  </button>
+                </div>
               </li>
             ))}
           </ul>

@@ -4,6 +4,7 @@ import Modal from "../components/Modal";
 import SearchInput from "../components/SearchInput";
 import { trpc } from "../utils/trpc";
 import Image from "next/image";
+import PlayerCard from "./PlayerCard";
 
 const CreateGame = () => {
   const [modalOpen, setModalOpen] = useState(false);
@@ -64,7 +65,7 @@ const CreateGame = () => {
             onSubmit={() => setId(users.data?.[0]?.id)}
             onChange={onChange}
           />
-          <ul className="w-full border bg-gray-50 rounded-lg overflow-none py-1 h-40 overflow-y-auto">
+          <ul className="w-full border bg-gray-50 rounded-lg overflow-none  h-80 overflow-y-auto">
             {users.data?.map((user) => (
               <li key={user.id}>
                 <button
@@ -73,18 +74,14 @@ const CreateGame = () => {
                     e.stopPropagation();
                     setId(user.id);
                   }}
-                  className="px-4 py-3 w-full text-lg flex flex-row items-center gap-4 hover:bg-gray-100"
+                  className="px-4 py-3 w-full text-lg flex flex-row items-center gap-4 hover:bg-gray-100 border-b"
                 >
-                  <div className="avatar">
-                    <div className="w-10 mask mask-squircle">
-                      <Image layout="fill" src={user.image} alt="Avatar" />
-                    </div>
-                  </div>
-                  {user.name}
-                  <div className="flex-grow" />
-                  {id === user.id && (
-                    <CheckCircleIcon className="w-6 text-green-400" />
-                  )}
+                  <PlayerCard
+                    selected={user.id === id}
+                    name={user.name!}
+                    image={user.image!}
+                    elo={user.elo}
+                  />
                 </button>
               </li>
             ))}

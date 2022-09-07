@@ -54,8 +54,24 @@ export const protectedExampleRouter = createProtectedRouter()
           from: {
             select: {
               name: true,
+              elo: true,
+              image: true,
             },
           },
+        },
+      });
+    },
+  })
+
+  .mutation("declineInvite", {
+    input: z.object({
+      inviteId: z.string(),
+    }),
+    resolve: async ({ ctx, input }) => {
+      return await ctx.prisma.gameInvite.delete({
+        where: {
+          id: input.inviteId,
+          // TODO make sure toUserId is context.sewssionuser.id
         },
       });
     },
@@ -78,6 +94,7 @@ export const protectedExampleRouter = createProtectedRouter()
               name: true,
               elo: true,
               image: true,
+              id: true,
             },
           },
         },
