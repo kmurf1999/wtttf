@@ -13,6 +13,9 @@ function defineNextConfig(config) {
 }
 
 export default defineNextConfig({
+  images: {
+    domains: ["avatars.githubusercontent.com"],
+  },
   reactStrictMode: true,
   swcMinify: true,
 });
