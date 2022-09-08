@@ -94,7 +94,7 @@ const JoinGame = () => {
                         </span>
                       </div>
                       <div className="text-black/[0.45] text-sm font-mono">
-                        {invite.from.elo} <b>ELO</b>
+                        {invite.from.rating} <b>ELO</b>
                       </div>
                     </div>
                     <div className="flex-grow" />

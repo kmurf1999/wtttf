@@ -14,10 +14,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Example {
-  id String @id @default(cuid())
-}
-
 // Necessary for Next auth
 model Account {
   id                String  @id @default(cuid())
@@ -62,7 +58,7 @@ model User {
   accounts      Account[]
   sessions      Session[]
 
-  elo Int @default(1000)
+  rating Float @default(1000)
 
   sentGameInvites     GameInvite[] @relation("from")
   receivedGameInvites GameInvite[] @relation("to")
@@ -91,8 +87,11 @@ model GameInProgress {
 
 model GameResult {
   id       String @id() @default(cuid())
+  date    DateTime @default(now())
   winnerId String
   winner   User   @relation(name: "wins", fields: [winnerId], references: [id])
+  winnerScore Int
   loserId  String
   loser    User   @relation(name: "losses", fields: [loserId], references: [id])
+  loserScore Int
 }

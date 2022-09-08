@@ -22,7 +22,7 @@ export const protectedExampleRouter = createProtectedRouter()
           id: true,
           name: true,
           image: true,
-          elo: true,
+          rating: true,
           email: true,
         },
         take: 10,
@@ -55,7 +55,7 @@ export const protectedExampleRouter = createProtectedRouter()
           from: {
             select: {
               name: true,
-              elo: true,
+              rating: true,
               image: true,
             },
           },
@@ -93,7 +93,7 @@ export const protectedExampleRouter = createProtectedRouter()
           players: {
             select: {
               name: true,
-              elo: true,
+              rating: true,
               image: true,
               id: true,
             },

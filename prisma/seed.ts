@@ -10,7 +10,7 @@ async function main() {
     create: {
       email: "alice@prisma.io",
       name: "Alice Wonderland",
-      elo: 2600,
+      rating: 2600,
       image: "/alice.jpg",
     },
   });

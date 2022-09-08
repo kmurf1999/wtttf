@@ -22,43 +22,6 @@ function calcElo(ratingA: number, ratingB: number, k: number, winner: 0 | 1) {
   return [ratingA + k * (0 - probA), ratingB + k * (1 - probB)];
 }
 
-const CurrentGame = () => {
-  const game = trpc.useQuery(["auth.getGameInProgress"], {
-    // refetchInterval: 1000,
-  });
-  if (game.data && game.data.players.length === 2) {
-    const player1 = game.data.players[0];
-    const player2 = game.data.players[1];
-    console.log(calcElo(player1!.elo, player2!.elo, 30, 0));
-    return (
-      <div className="bg-white border rounded-lg p-8">
-        <h1 className="text-lg font-medium text-center uppercase mb-8">
-          Game In Progress
-        </h1>
-        <div className="flex flex-col gap-2">
-          <div>
-            <PlayerCard
-              name={player1.name}
-              image={player1.image}
-              elo={player1.elo}
-            />
-          </div>
-          <div className="divider italic">versus</div>
-          <div>
-            <PlayerCard
-              name={player2.name}
-              image={player2.image}
-              elo={player2.elo}
-            />
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  return null;
-};
-
 const Home: NextPage = (props) => {
   return (
     <Layout>
