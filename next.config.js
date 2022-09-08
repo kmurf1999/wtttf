@@ -1,4 +1,4 @@
-import { env } from "./src/env/server.mjs";
+const { env } = require("./src/env/server.js");
 
 /**
  * Don't be scared of the generics here.
@@ -12,7 +12,7 @@ function defineNextConfig(config) {
   return config;
 }
 
-export default defineNextConfig({
+module.exports = defineNextConfig({
   images: {
     domains: ["avatars.githubusercontent.com"],
   },

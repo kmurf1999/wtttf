@@ -1,8 +1,46 @@
 import z from "zod";
 import { createProtectedRouter } from "./context";
+import * as trpc from "@trpc/server";
+
+enum Events {
+  SEND_MESSAGE = "SEND_MESSAGE",
+}
+type Message = {
+  msg: string;
+};
 
 // Example router with queries that can only be hit if the user requesting is signed in
 export const protectedExampleRouter = createProtectedRouter()
+  .mutation("sendMessage", {
+    input: z.object({
+      msg: z.string(),
+    }),
+    resolve: async ({ ctx, input }) => {
+      console.log("HERE");
+      ctx.ee.emit(Events.SEND_MESSAGE, { msg: input.msg });
+
+      return { msg: input.msg };
+    },
+  })
+  .subscription("testSubscription", {
+    resolve: async ({ ctx }) => {
+      return new trpc.Subscription<Message>((emit) => {
+        function onMessage(data: Message) {
+          if (data.msg === "PING") {
+            emit.data({
+              msg: "PONG",
+            });
+          }
+        }
+
+        ctx.ee.on(Events.SEND_MESSAGE, onMessage);
+
+        return () => {
+          ctx.ee.off(Events.SEND_MESSAGE, onMessage);
+        };
+      });
+    },
+  })
   .query("getSession", {
     resolve({ ctx }) {
       return ctx.session;

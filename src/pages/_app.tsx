@@ -52,12 +52,12 @@ export default withTRPC<AppRouter>({
 
     return {
       links: [
+        getEndingLink(),
         loggerLink({
           enabled: (opts) =>
             process.env.NODE_ENV === "development" ||
             (opts.direction === "down" && opts.result instanceof Error),
         }),
-        getEndingLink(),
       ],
       url,
       transformer: superjson,
@@ -70,7 +70,7 @@ export default withTRPC<AppRouter>({
       headers: () => {
         if (ctx?.req) {
           const headers = ctx?.req?.headers;
-          delete headers?.connection;
+          // delete headers?.connection;
           return {
             ...headers,
             "x-ssr": "1",
