@@ -1,9 +1,6 @@
 import type { GetServerSidePropsContext, NextPage } from "next";
-import { useState } from "react";
-import PlayerCard from "../components/PlayerCard";
-import { getServerAuthSession } from "../server/common/get-server-auth-session";
-import { trpc } from "../utils/trpc";
 import Layout from "../components/Layout";
+import { getServerAuthSession } from "../server/common/get-server-auth-session";
 
 function winProbability(ratingA: number, ratingB: number) {
   return (

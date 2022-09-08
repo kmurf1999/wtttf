@@ -1,5 +1,5 @@
-import { createProtectedRouter } from "./context";
 import z from "zod";
+import { createProtectedRouter } from "./context";
 
 // Example router with queries that can only be hit if the user requesting is signed in
 export const protectedExampleRouter = createProtectedRouter()
@@ -16,7 +16,7 @@ export const protectedExampleRouter = createProtectedRouter()
       return await ctx.prisma.user.findMany({
         where: {
           name: { contains: input.name },
-          // id: { not: ctx.session.user.id },
+          id: { not: ctx.session.user.id },
         },
         select: {
           id: true,
