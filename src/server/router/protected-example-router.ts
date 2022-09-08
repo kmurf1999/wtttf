@@ -23,6 +23,7 @@ export const protectedExampleRouter = createProtectedRouter()
           name: true,
           image: true,
           elo: true,
+          email: true,
         },
         take: 10,
       });
