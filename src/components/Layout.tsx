@@ -1,6 +1,7 @@
 import Head from "next/head";
 import { useNotificationStore } from "../providers/NotifcationProvider";
 import { trpc } from "../utils/trpc";
+import Header from "./Header";
 import NotificationCenter from "./Notifications/NotificationCenter";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
@@ -26,6 +27,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       </Head>
       <div className="h-screen max-h-screen flex flex-col">
         <div className="grow overflow-y-auto flex flex-col">
+          <Header />
           <main className="relative grow bg-slate-100 flex items-center justify-center">
             <NotificationCenter />
             {children}

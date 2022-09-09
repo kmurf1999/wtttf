@@ -1,6 +1,5 @@
 import { useSession } from "next-auth/react";
 import Image from "next/image";
-import { useSession } from "next-auth/react";
 
 
 export default function Header() {
@@ -16,9 +15,15 @@ export default function Header() {
                   <Image layout="fill" src={user.image || ''} alt="Avatar" />
                 </div> 
               </div>
-              <div className="text-start text-black/[0.85]">{user.name}</div>
+              <div className="text-start text-black/[0.85] font-bold">{user.name?.split(' ')[0]}</div>
             </a>
           }
+          {/* TODO - fix the logo */ }
+          <div className="avatar">
+            <div className="items-end w-14">
+              <Image layout="fill" src="/WTTTF_logo.png" alt="WTTTF logo" />
+            </div>
+          </div>
         </nav>
     );
 }
