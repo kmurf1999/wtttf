@@ -4,9 +4,11 @@ import superjson from "superjson";
 
 import { exampleRouter } from "./example";
 import { protectedExampleRouter } from "./protected-example-router";
+import { gameRouter } from "./game";
 
 export const appRouter = createRouter()
   .transformer(superjson)
+  .merge("game.", gameRouter)
   .merge("example.", exampleRouter)
   .merge("auth.", protectedExampleRouter);
 

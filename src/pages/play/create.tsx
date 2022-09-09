@@ -11,6 +11,7 @@ const Create: NextPage = () => {
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
 
   const players = trpc.useQuery(["auth.getUsersByName", { name }]);
+  const createGame = trpc.useMutation(["game.invite.sendInvite"]);
 
   return (
     <Layout>
@@ -56,7 +57,13 @@ const Create: NextPage = () => {
         </ul>
 
         <div className="w-full flex flex-row justify-end">
-          <button className="btn btn-primary" disabled={!selectedUserId}>
+          <button
+            onClick={() =>
+              createGame.mutate({ otherPlayerId: selectedUserId! })
+            }
+            className="btn btn-primary"
+            disabled={!selectedUserId}
+          >
             Send
             <ArrowRightIcon className="w-5 h-5 ml-2" />
           </button>

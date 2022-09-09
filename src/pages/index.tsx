@@ -1,8 +1,6 @@
 import type { GetServerSidePropsContext, NextPage } from "next";
-import { useEffect, useState } from "react";
 import Layout from "../components/Layout";
 import { getServerAuthSession } from "../server/common/get-server-auth-session";
-import { trpc } from "../utils/trpc";
 
 function winProbability(ratingA: number, ratingB: number) {
   return (
@@ -22,25 +20,6 @@ function calcElo(ratingA: number, ratingB: number, k: number, winner: 0 | 1) {
 }
 
 const Home: NextPage = () => {
-  const [x, setX] = useState({ msg: "test" });
-  trpc.useSubscription(["auth.testSubscription"], {
-    onError: (err) => {
-      console.log(err);
-    },
-    onNext: (data) => {
-      setX(data);
-    },
-  });
-  console.log(x);
-  const a = trpc.useMutation(["auth.sendMessage"], {});
-  useEffect(() => {
-    const timer = setInterval(() => {
-      a.mutate({ msg: "PING" });
-    }, 2000);
-    return () => {
-      clearInterval(timer);
-    };
-  });
   return (
     <Layout>
       <div className="p-6 max-w-sm bg-white rounded-lg border border-gray-200 shadow-md dark:bg-gray-800 dark:border-gray-700">
