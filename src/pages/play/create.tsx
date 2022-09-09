@@ -20,7 +20,7 @@ const Create: NextPage = () => {
         className="p-6 flex flex-col gap-3 max-w-sm bg-white rounded-lg border border-gray-200 shadow-md dark:bg-gray-800 dark:border-gray-700"
       >
         <h5 className="text-lg font-bold tracking-tight text-gray-900 dark:text-white">
-          Create game
+          Create Game
         </h5>
         <div className="text-gray-400">Search Players</div>
         <SearchInput
@@ -32,9 +32,17 @@ const Create: NextPage = () => {
         <div className="text-gray-400">Players</div>
         <ul className="h-60 overflow-y-auto bg-gray-50 border border-gray-300 rounded-lg flex flex-col ">
           {players.data?.map((player) => (
-            <li key={player.id}>
+            <li key={player.id} className="relative">
+              {player.id === selectedUserId && (
+                <div className="absolute w-1 h-full bg-purple-500 l-0 t-0" />
+              )}
               <button
-                className="w-full p-4 flex flex-row gap-2 hover:bg-gray-100"
+                className={[
+                  "w-full p-4 flex flex-row gap-2 ",
+                  selectedUserId === player.id
+                    ? "bg-purple-100"
+                    : "hover:bg-gray-100",
+                ].join(" ")}
                 onClick={() => setSelectedUserId(player.id)}
               >
                 <div className="avatar online mr-2">
@@ -56,7 +64,7 @@ const Create: NextPage = () => {
           ))}
         </ul>
 
-        <div className="w-full flex flex-row justify-end">
+        <div className="mt-4 w-full flex flex-row justify-end">
           <button
             onClick={() =>
               createGame.mutate({ otherPlayerId: selectedUserId! })

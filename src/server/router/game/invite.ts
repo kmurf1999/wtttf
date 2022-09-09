@@ -82,6 +82,7 @@ export const inviteRouter = createProtectedRouter()
               name: true,
               rating: true,
               image: true,
+              email: true,
             },
           },
         },
