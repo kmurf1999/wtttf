@@ -6,9 +6,10 @@ import { createProtectedRouter } from "../context";
 
 enum Events {
   SEND_INVITE = "SEND_INVITE",
+  ACCEPT_INVITE = "ACCEPT_INVITE",
 }
 
-type GameInviteEvent = GameInvite & {
+type SendInviteEvent = GameInvite & {
   from: {
     name: string;
     elo: number;
@@ -16,12 +17,30 @@ type GameInviteEvent = GameInvite & {
   };
 };
 
+type AcceptInviteEvent = { id: string; players: { id: string }[] };
+
 export const inviteRouter = createProtectedRouter()
   .transformer(superjson)
+  .subscription("streamAcceptedInvites", {
+    resolve: async ({ ctx }) => {
+      return new trpc.Subscription<AcceptInviteEvent>((emit) => {
+        function onMessage(data: AcceptInviteEvent) {
+          if (data.players.some((p) => p.id === ctx.session.user.id)) {
+            emit.data(data);
+          }
+        }
+
+        ctx.ee.on(Events.ACCEPT_INVITE, onMessage);
+        return () => {
+          ctx.ee.off(Events.ACCEPT_INVITE, onMessage);
+        };
+      });
+    },
+  })
   .subscription("streamReceivedInvites", {
     resolve: async ({ ctx }) => {
-      return new trpc.Subscription<GameInviteEvent>((emit) => {
-        function onMessage(data: GameInviteEvent) {
+      return new trpc.Subscription<SendInviteEvent>((emit) => {
+        function onMessage(data: SendInviteEvent) {
           if (data.toUserId === ctx.session.user.id) {
             emit.data(data);
           }
@@ -123,7 +142,7 @@ export const inviteRouter = createProtectedRouter()
       // delete invite
       await ctx.prisma.gameInvite.delete({ where: { id: input.inviteId } });
       // create game in progress
-      return await ctx.prisma.gameInProgress.create({
+      const game = await ctx.prisma.game.create({
         data: {
           players: {
             connect: [
@@ -135,5 +154,13 @@ export const inviteRouter = createProtectedRouter()
           },
         },
       });
+
+      // notify other player that game is starting
+      ctx.ee.emit(Events.ACCEPT_INVITE, {
+        id: game.id,
+        players: [{ id: invite.fromUserId }, { id: invite.toUserId }],
+      });
+
+      return game;
     },
   });

@@ -1,15 +1,25 @@
+import {
+  GameInviteNotification as GameInviteNotificationType,
+  useNotificationStore,
+} from "../../providers/NotifcationProvider";
+import { trpc } from "../../utils/trpc";
+
 export default function GameInviteNotification({
-  name,
-  accept,
-  decline,
-  close,
+  id,
+  data: {
+    id: inviteId,
+    from: { name },
+  },
 }: {
-  inviteId: string;
-  name: string;
-  accept: () => void;
-  decline: () => void;
-  close: () => void;
+  id: string;
+  data: GameInviteNotificationType;
 }) {
+  const acceptInvite = trpc.useMutation(["game.invite.acceptInvite"]);
+  const declineInvite = trpc.useMutation(["game.invite.declineInvite"]);
+  const closeNotification = useNotificationStore(
+    (state) => state.closeNotification
+  );
+
   return (
     <div
       id="toast-interactive"
@@ -46,7 +56,10 @@ export default function GameInviteNotification({
               <a
                 href="#"
                 className="inline-flex justify-center w-full px-2 py-1.5 text-xs font-medium text-center text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-500 dark:hover:bg-blue-600 dark:focus:ring-blue-800"
-                onClick={accept}
+                onClick={() => {
+                  acceptInvite.mutate({ inviteId });
+                  closeNotification(id);
+                }}
               >
                 Accept
               </a>
@@ -55,7 +68,10 @@ export default function GameInviteNotification({
               <a
                 href="#"
                 className="inline-flex justify-center w-full px-2 py-1.5 text-xs font-medium text-center text-gray-900 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-gray-200 dark:bg-gray-600 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-700 dark:focus:ring-gray-700"
-                onClick={decline}
+                onClick={() => {
+                  declineInvite.mutate({ inviteId });
+                  closeNotification(id);
+                }}
               >
                 Decline
               </a>
@@ -67,7 +83,7 @@ export default function GameInviteNotification({
           className="ml-auto -mx-1.5 -my-1.5 bg-white text-gray-400 hover:text-gray-900 rounded-lg focus:ring-2 focus:ring-gray-300 p-1.5 hover:bg-gray-100 inline-flex h-8 w-8 dark:text-gray-500 dark:hover:text-white dark:bg-gray-800 dark:hover:bg-gray-700"
           data-dismiss-target="#toast-interactive"
           aria-label="Close"
-          onClick={close}
+          onClick={() => closeNotification(id)}
         >
           <span className="sr-only">Close</span>
           <svg
