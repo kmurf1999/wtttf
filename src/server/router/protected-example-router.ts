@@ -1,5 +1,5 @@
-import { createProtectedRouter } from "./context";
 import z from "zod";
+import { createProtectedRouter } from "./context";
 
 // Example router with queries that can only be hit if the user requesting is signed in
 export const protectedExampleRouter = createProtectedRouter()
@@ -29,54 +29,6 @@ export const protectedExampleRouter = createProtectedRouter()
       });
     },
   })
-  .query("getSentInvites", {
-    resolve: async ({ ctx }) => {
-      return await ctx.prisma.gameInvite.findMany({
-        where: {
-          fromUserId: ctx.session.user.id,
-        },
-        include: {
-          to: {
-            select: {
-              name: true,
-            },
-          },
-        },
-      });
-    },
-  })
-  .query("getReceivedInvites", {
-    resolve: async ({ ctx }) => {
-      return await ctx.prisma.gameInvite.findMany({
-        where: {
-          toUserId: ctx.session.user.id,
-        },
-        include: {
-          from: {
-            select: {
-              name: true,
-              rating: true,
-              image: true,
-            },
-          },
-        },
-      });
-    },
-  })
-
-  .mutation("declineInvite", {
-    input: z.object({
-      inviteId: z.string(),
-    }),
-    resolve: async ({ ctx, input }) => {
-      return await ctx.prisma.gameInvite.delete({
-        where: {
-          id: input.inviteId,
-          // TODO make sure toUserId is context.sewssionuser.id
-        },
-      });
-    },
-  })
   .query("getGameInProgress", {
     resolve: async ({ ctx }) => {
       const me = await ctx.prisma.user.findUnique({
@@ -98,47 +50,6 @@ export const protectedExampleRouter = createProtectedRouter()
               id: true,
             },
           },
-        },
-      });
-    },
-  })
-  .mutation("joinGame", {
-    input: z.object({
-      inviteId: z.string(),
-    }),
-    resolve: async ({ ctx, input }) => {
-      const invite = await ctx.prisma.gameInvite.findUnique({
-        where: { id: input.inviteId },
-      });
-      if (!invite) {
-        throw new Error("Invite not found");
-      }
-      // delete invite
-      await ctx.prisma.gameInvite.delete({ where: { id: input.inviteId } });
-      // create game in progress
-      return await ctx.prisma.gameInProgress.create({
-        data: {
-          players: {
-            connect: [
-              {
-                id: invite.fromUserId,
-              },
-              { id: invite.toUserId },
-            ],
-          },
-        },
-      });
-    },
-  })
-  .mutation("createGame", {
-    input: z.object({
-      otherPlayerId: z.string(),
-    }),
-    resolve: async ({ ctx, input }) => {
-      return await ctx.prisma.gameInvite.create({
-        data: {
-          fromUserId: ctx.session.user.id,
-          toUserId: input.otherPlayerId,
         },
       });
     },

@@ -1,9 +1,6 @@
 import type { GetServerSidePropsContext, NextPage } from "next";
-import { useState } from "react";
-import PlayerCard from "../components/PlayerCard";
-import { getServerAuthSession } from "../server/common/get-server-auth-session";
-import { trpc } from "../utils/trpc";
 import Layout from "../components/Layout";
+import { getServerAuthSession } from "../server/common/get-server-auth-session";
 
 function winProbability(ratingA: number, ratingB: number) {
   return (
@@ -22,7 +19,7 @@ function calcElo(ratingA: number, ratingB: number, k: number, winner: 0 | 1) {
   return [ratingA + k * (0 - probA), ratingB + k * (1 - probB)];
 }
 
-const Home: NextPage = (props) => {
+const Home: NextPage = () => {
   return (
     <Layout>
       <div className="p-6 max-w-sm bg-white rounded-lg border border-gray-200 shadow-md dark:bg-gray-800 dark:border-gray-700">

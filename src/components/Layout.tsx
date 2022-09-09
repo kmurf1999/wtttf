@@ -1,6 +1,21 @@
 import Head from "next/head";
+import { useNotificationStore } from "../providers/NotifcationProvider";
+import { trpc } from "../utils/trpc";
+import NotificationCenter from "./Notifications/NotificationCenter";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
+  const pushNotification = useNotificationStore(
+    (state) => state.pushNotification
+  );
+
+  trpc.useSubscription(["game.invite.streamReceivedInvites"], {
+    onNext: (data) => {
+      pushNotification({
+        type: "GameInvite",
+        data,
+      });
+    },
+  });
 
   return (
     <>
@@ -11,7 +26,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       </Head>
       <div className="h-screen max-h-screen flex flex-col">
         <div className="grow overflow-y-auto flex flex-col">
-          <main className="grow bg-slate-100 flex items-center justify-center">
+          <main className="relative grow bg-slate-100 flex items-center justify-center">
+            <NotificationCenter />
             {children}
           </main>
           <footer></footer>

@@ -66,32 +66,32 @@ model User {
   wins   GameResult[] @relation("wins")
   losses GameResult[] @relation("losses")
 
-  gameInProgress   GameInProgress? @relation(fields: [gameInProgressId], references: [id])
-  gameInProgressId String?
+  currentGame   Game?   @relation(fields: [currentGameId], references: [id])
+  currentGameId String?
 }
 
 model GameInvite {
   id         String   @id @default(cuid())
   date       DateTime @default(now())
-  from       User     @relation(name: "from", fields: [fromUserId], references: [id])
+  from       User     @relation(name: "from", fields: [fromUserId], references: [id], onDelete: Cascade)
   fromUserId String
-  to         User     @relation(name: "to", fields: [toUserId], references: [id])
+  to         User     @relation(name: "to", fields: [toUserId], references: [id], onDelete: Cascade)
   toUserId   String
 }
 
-model GameInProgress {
+model Game {
   id      String   @id @default(cuid())
   date    DateTime @default(now())
   players User[]
 }
 
 model GameResult {
-  id       String @id() @default(cuid())
-  date    DateTime @default(now())
-  winnerId String
-  winner   User   @relation(name: "wins", fields: [winnerId], references: [id])
+  id          String   @id() @default(cuid())
+  date        DateTime @default(now())
+  winnerId    String
+  winner      User     @relation(name: "wins", fields: [winnerId], references: [id])
   winnerScore Int
-  loserId  String
-  loser    User   @relation(name: "losses", fields: [loserId], references: [id])
-  loserScore Int
+  loserId     String
+  loser       User     @relation(name: "losses", fields: [loserId], references: [id])
+  loserScore  Int
 }

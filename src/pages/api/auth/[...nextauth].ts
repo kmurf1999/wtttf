@@ -4,7 +4,7 @@ import GitubProvider from "next-auth/providers/github";
 // Prisma adapter for NextAuth, optional and can be removed
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import { prisma } from "../../../server/db/client";
-import { env } from "../../../env/server.mjs";
+import { env } from "../../../env/server.js";
 
 export const authOptions: NextAuthOptions = {
   // Include user.id on session
