@@ -1,3 +1,4 @@
+import { useRouter } from "next/router";
 import {
   GameInviteNotification as GameInviteNotificationType,
   useNotificationStore,
@@ -14,7 +15,12 @@ export default function GameInviteNotification({
   id: string;
   data: GameInviteNotificationType;
 }) {
-  const acceptInvite = trpc.useMutation(["game.invite.acceptInvite"]);
+  const router = useRouter();
+  const acceptInvite = trpc.useMutation(["game.invite.acceptInvite"], {
+    onSuccess: (data) => {
+      router.push(`/play/${data.id}`);
+    },
+  });
   const declineInvite = trpc.useMutation(["game.invite.declineInvite"]);
   const closeNotification = useNotificationStore(
     (state) => state.closeNotification
@@ -22,7 +28,6 @@ export default function GameInviteNotification({
 
   return (
     <div
-      id="toast-interactive"
       className="p-4 w-full max-w-xs text-gray-500 bg-white rounded-lg shadow-lg dark:bg-gray-800 dark:text-gray-400"
       role="alert"
     >
@@ -53,8 +58,7 @@ export default function GameInviteNotification({
           </div>
           <div className="grid grid-cols-2 gap-2 mt-4">
             <div>
-              <a
-                href="#"
+              <button
                 className="inline-flex justify-center w-full px-2 py-1.5 text-xs font-medium text-center text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-500 dark:hover:bg-blue-600 dark:focus:ring-blue-800"
                 onClick={() => {
                   acceptInvite.mutate({ inviteId });
@@ -62,11 +66,10 @@ export default function GameInviteNotification({
                 }}
               >
                 Accept
-              </a>
+              </button>
             </div>
             <div>
-              <a
-                href="#"
+              <button
                 className="inline-flex justify-center w-full px-2 py-1.5 text-xs font-medium text-center text-gray-900 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-gray-200 dark:bg-gray-600 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-700 dark:focus:ring-gray-700"
                 onClick={() => {
                   declineInvite.mutate({ inviteId });
@@ -74,7 +77,7 @@ export default function GameInviteNotification({
                 }}
               >
                 Decline
-              </a>
+              </button>
             </div>
           </div>
         </div>
