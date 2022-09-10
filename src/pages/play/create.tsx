@@ -1,6 +1,8 @@
-import { ArrowRightIcon } from "@heroicons/react/24/solid";
+import { ArrowLeftIcon, ArrowRightIcon } from "@heroicons/react/24/solid";
 import { NextPage } from "next";
 import Image from "next/image";
+import Link from "next/link";
+import { useRouter } from "next/router";
 import { useState } from "react";
 import Layout from "../../components/Layout";
 import SearchInput from "../../components/SearchInput";
@@ -9,19 +11,33 @@ import { trpc } from "../../utils/trpc";
 const Create: NextPage = () => {
   const [name, setName] = useState("");
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
+  const router = useRouter();
 
   const players = trpc.useQuery(["auth.getUsersByName", { name }]);
   const createGame = trpc.useMutation(["game.invite.sendInvite"]);
 
+  trpc.useSubscription(["game.invite.streamAcceptedInvites"], {
+    onNext: (data) => {
+      router.push(`/play/${data.id}`);
+    },
+  });
+
   return (
     <Layout>
       <div
-        style={{ width: 800 }}
-        className="p-6 flex flex-col gap-3 max-w-sm bg-white rounded-lg border border-gray-200 shadow-md dark:bg-gray-800 dark:border-gray-700"
+        style={{ width: 500 }}
+        className="p-6 flex flex-col gap-3 bg-white rounded-lg border border-gray-200 shadow-md dark:bg-gray-800 dark:border-gray-700"
       >
-        <h5 className="text-lg font-bold tracking-tight text-gray-900 dark:text-white">
-          Create Game
-        </h5>
+        <div className="flex flex-row items-center gap-2">
+          <Link href="/">
+            <a className="btn btn-sm btn-ghost btn-circle">
+              <ArrowLeftIcon className="h-5" />
+            </a>
+          </Link>
+          <h5 className="text-lg font-bold tracking-tight text-gray-900 dark:text-white">
+            Create Game
+          </h5>
+        </div>
         <div className="text-gray-400">Search Players</div>
         <SearchInput
           placeholder="Player name"

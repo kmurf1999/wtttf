@@ -1,5 +1,6 @@
 import { GameInvite } from "@prisma/client";
 import * as trpc from "@trpc/server";
+import { randomUUID } from "crypto";
 import superjson from "superjson";
 import z from "zod";
 import { createProtectedRouter } from "../context";
@@ -143,18 +144,19 @@ export const inviteRouter = createProtectedRouter()
       // delete invite
       await ctx.prisma.gameInvite.delete({ where: { id: input.inviteId } });
       // create game in progress
-      const game = await ctx.prisma.game.create({
-        data: {
-          players: {
-            connect: [
-              {
-                id: invite.fromUserId,
-              },
-              { id: invite.toUserId },
-            ],
+
+      const game = {
+        id: randomUUID(),
+        players: [
+          {
+            id: invite.fromUserId,
+            connected: false,
           },
-        },
-      });
+          { id: invite.toUserId, connected: false },
+        ],
+      };
+
+      ctx.cache.set(game.id, game);
 
       // notify other player that game is starting
       ctx.ee.emit(Events.ACCEPT_INVITE, {
