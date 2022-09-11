@@ -14,7 +14,7 @@ function defineNextConfig(config) {
 
 module.exports = defineNextConfig({
   images: {
-    domains: ["avatars.githubusercontent.com"],
+    domains: ["avatars.githubusercontent.com", "lh3.googleusercontent.com"],
   },
   reactStrictMode: true,
   swcMinify: true,

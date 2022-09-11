@@ -145,8 +145,27 @@ export const inviteRouter = createProtectedRouter()
       await ctx.prisma.gameInvite.delete({ where: { id: input.inviteId } });
       // create game in progress
 
-      const game = {
-        id: randomUUID(),
+      const game = await ctx.prisma.game.create({
+        data: {
+          players: {
+            connect: [{ id: invite.fromUserId }, { id: invite.toUserId }],
+          },
+        },
+        select: {
+          id: true,
+          players: {
+            select: {
+              image: true,
+              name: true,
+              email: true,
+              rating: true,
+            },
+          },
+        },
+      });
+
+      const gameState = {
+        id: game.id,
         players: [
           {
             id: invite.fromUserId,
@@ -156,7 +175,7 @@ export const inviteRouter = createProtectedRouter()
         ],
       };
 
-      ctx.cache.set(game.id, game);
+      ctx.cache.set(game.id, gameState);
 
       // notify other player that game is starting
       ctx.ee.emit(Events.ACCEPT_INVITE, {

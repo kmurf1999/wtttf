@@ -90,8 +90,8 @@ model GameResult {
   date        DateTime @default(now())
   winnerId    String
   winner      User     @relation(name: "wins", fields: [winnerId], references: [id])
-  winnerScore Int
+  winnerScore Int?
   loserId     String
   loser       User     @relation(name: "losses", fields: [loserId], references: [id])
-  loserScore  Int
+  loserScore  Int?
 }
