@@ -21,10 +21,6 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-RUN echo $DATABASE_URL
-RUN echo $DATABASE_URL >> .env
-COPY .env .env
-
 # COPY .env .env
 
 RUN npm run build
