@@ -71,8 +71,8 @@ COPY --from=builder --chown=nextjs:nodejs /app/.next ./.next
 USER nextjs
 
 ARG PORT
+EXPOSE $PORT
 ENV PORT=$PORT
-EXPOSE PORT
 
 ARG DATABASE_URL
 ARG NEXTAUTH_SECRET
