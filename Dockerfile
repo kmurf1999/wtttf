@@ -65,6 +65,7 @@ COPY --from=builder /app/node_modules ./node_modules
 # https://nextjs.org/docs/advanced-features/output-file-tracing
 COPY package.json yarn.lock* package-lock.json* pnpm-lock.yaml* ./
 
+COPY next.config.mjs ./next.config.mjs
 COPY --from=builder --chown=nextjs:nodejs /app/dist ./dist
 COPY --from=builder --chown=nextjs:nodejs /app/.next ./.next
 
