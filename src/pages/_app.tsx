@@ -4,13 +4,12 @@ import { loggerLink } from '@trpc/client/links/loggerLink';
 import { createWSClient, wsLink } from '@trpc/client/links/wsLink';
 import { withTRPC } from '@trpc/next';
 import { SessionProvider } from 'next-auth/react';
-import getConfig from 'next/config';
 import type { AppType } from 'next/dist/shared/lib/utils';
 import superjson from 'superjson';
 import type { AppRouter } from '../server/router';
 import '../styles/globals.css';
 
-const { APP_URL, WS_URL } = getConfig().publicRuntimeConfig;
+import { env } from '../env/client';
 
 const MyApp: AppType = ({
   Component,
@@ -26,12 +25,12 @@ const MyApp: AppType = ({
 function getEndingLink() {
   if (typeof window === 'undefined') {
     return httpBatchLink({
-      url: `${APP_URL}/api/trpc`,
+      url: `${env.NEXT_PUBLIC_APP_URL}/api/trpc`,
     });
   }
 
   const client = createWSClient({
-    url: WS_URL,
+    url: env.NEXT_PUBLIC_WS_URL,
   });
 
   return wsLink<AppRouter>({
@@ -45,7 +44,7 @@ export default withTRPC<AppRouter>({
      * If you want to use SSR, you need to use the server's full URL
      * @link https://trpc.io/docs/ssr
      */
-    const url = `${APP_URL}/api/trpc`;
+    const url = `${env.NEXT_PUBLIC_APP_URL}/api/trpc`;
 
     return {
       links: [
