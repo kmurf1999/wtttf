@@ -1,18 +1,18 @@
-import { FlagIcon } from "@heroicons/react/24/solid";
-import { inferSubscriptionOutput } from "@trpc/server";
-import { GetServerSidePropsContext, NextPage } from "next";
-import { useSession } from "next-auth/react";
-import Image from "next/image";
-import { useRouter } from "next/router";
-import { useState } from "react";
-import Layout from "../../components/Layout";
-import { getServerAuthSession } from "../../server/common/get-server-auth-session";
-import { AppRouter } from "../../server/router";
-import { trpc } from "../../utils/trpc";
+import { FlagIcon } from '@heroicons/react/24/solid';
+import { inferSubscriptionOutput } from '@trpc/server';
+import { GetServerSidePropsContext, NextPage } from 'next';
+import { useSession } from 'next-auth/react';
+import Image from 'next/image';
+import { useRouter } from 'next/router';
+import { useState } from 'react';
+import Layout from '../../components/Layout';
+import { getServerAuthSession } from '../../server/common/get-server-auth-session';
+import { AppRouter } from '../../server/router';
+import { trpc } from '../../utils/trpc';
 
 type GameState = inferSubscriptionOutput<
   AppRouter,
-  "game.play.subscribeToGame"
+  'game.play.subscribeToGame'
 >;
 
 const Player = ({
@@ -28,7 +28,7 @@ const Player = ({
 }) => {
   return (
     <div className="text-center">
-      <div className={["avatar", connected && "online"].join(" ")}>
+      <div className={['avatar', connected && 'online'].join(' ')}>
         <div className="w-12 mask mask-squircle">
           <Image layout="fill" src={image} alt="Avatar" />
         </div>
@@ -47,11 +47,11 @@ const PendingGameResult = ({
 }: {
   fromMe: boolean;
   gameId: string;
-  winner: { name: string; score?: number };
-  loser: { name: string; score?: number };
+  winner: { name?: string | null; score?: number };
+  loser: { name?: string | null; score?: number };
 }) => {
-  const declineResult = trpc.useMutation(["game.play.rejectGameResult"]);
-  const acceptResult = trpc.useMutation(["game.play.acceptGameResult"]);
+  const declineResult = trpc.useMutation(['game.play.rejectGameResult']);
+  const acceptResult = trpc.useMutation(['game.play.acceptGameResult']);
   return (
     <div className="h-full flex flex-row items-center">
       <div className="grow border-r p-4">
@@ -92,13 +92,13 @@ const CurrentGame = ({ gameId }: { gameId: string }) => {
   const session = useSession();
   const router = useRouter();
   const [gameState, setGameState] = useState<GameState | null>(null);
-  const game = trpc.useQuery(["game.play.getGameById", { gameId }]);
+  const game = trpc.useQuery(['game.play.getGameById', { gameId }]);
   const [myScore, setMyScore] = useState<number | null>(null);
   const [theirScore, setTheirScore] = useState<number | null>(null);
-  const postGameResult = trpc.useMutation("game.play.postGameResult");
-  const resignGame = trpc.useMutation("game.play.resignGame");
+  const postGameResult = trpc.useMutation('game.play.postGameResult');
+  const resignGame = trpc.useMutation('game.play.resignGame');
 
-  trpc.useSubscription(["game.play.subscribeToGame", { gameId }], {
+  trpc.useSubscription(['game.play.subscribeToGame', { gameId }], {
     onError: (err) => {
       console.log(err);
     },
@@ -107,7 +107,7 @@ const CurrentGame = ({ gameId }: { gameId: string }) => {
     },
   });
 
-  if (gameState?.data.status === "finished" && gameState.data.resultId) {
+  if (gameState?.data.status === 'finished' && gameState.data.resultId) {
     // redirect to game result page
     router.push(`/play/results/${gameState.data.resultId}`);
   }
@@ -161,14 +161,14 @@ const CurrentGame = ({ gameId }: { gameId: string }) => {
         <input
           className="border-2 border-gray-200 rounded-lg w-16  px-0 py-1  text-center text-4xl"
           type="num"
-          value={myScore === null ? "" : myScore}
+          value={myScore === null ? '' : myScore}
           onChange={(e) => setMyScore(parseScore(e))}
         />
         <div className="text-4xl font-bold text-gray-500 text-center ">-</div>
         <input
           className="border-2 border-gray-200 rounded-lg w-16 px-0 py-1 text-center text-4xl"
           type="num"
-          value={theirScore === null ? "" : theirScore}
+          value={theirScore === null ? '' : theirScore}
           onChange={(e) => setTheirScore(parseScore(e))}
         />
         <Player
@@ -214,15 +214,15 @@ const CurrentGame = ({ gameId }: { gameId: string }) => {
               // TODO
               winner={{
                 name: game.data.players.find(
-                  (p) => p.id === gameState.data.result?.winnerId
-                )?.name!,
+                  (p) => p.id === gameState.data.result?.winnerId,
+                )?.name,
                 score: gameState.data.result.winnerScore,
               }}
               // TODO
               loser={{
                 name: game.data.players.find(
-                  (p) => p.id === gameState.data.result?.loserId
-                )?.name!,
+                  (p) => p.id === gameState.data.result?.loserId,
+                )?.name,
                 score: gameState.data.result.loserScore,
               }}
             />
@@ -250,7 +250,7 @@ const Play: NextPage = () => {
   const router = useRouter();
   const { gameId } = router.query;
 
-  if (typeof gameId !== "string") {
+  if (typeof gameId !== 'string') {
     return null; // TODO
   }
 
@@ -262,16 +262,16 @@ const Play: NextPage = () => {
 };
 
 export async function getServerSideProps(context: {
-  req: GetServerSidePropsContext["req"];
-  res: GetServerSidePropsContext["res"];
-  query: GetServerSidePropsContext["query"];
+  req: GetServerSidePropsContext['req'];
+  res: GetServerSidePropsContext['res'];
+  query: GetServerSidePropsContext['query'];
 }) {
   const session = await getServerAuthSession(context);
 
   if (!session) {
     return {
       redirect: {
-        destination: "/login",
+        destination: '/login',
         permanent: false,
       },
     };

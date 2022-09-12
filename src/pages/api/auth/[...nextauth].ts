@@ -1,11 +1,11 @@
-import NextAuth, { type NextAuthOptions } from "next-auth";
-import GitubProvider from "next-auth/providers/github";
-import GoogleProvider from "next-auth/providers/google";
+import NextAuth, { type NextAuthOptions } from 'next-auth';
+import GitubProvider from 'next-auth/providers/github';
+import GoogleProvider from 'next-auth/providers/google';
 
 // Prisma adapter for NextAuth, optional and can be removed
-import { PrismaAdapter } from "@next-auth/prisma-adapter";
-import { prisma } from "../../../server/db/client";
-import { env } from "../../../env/server.js";
+import { PrismaAdapter } from '@next-auth/prisma-adapter';
+import { prisma } from '../../../server/db/client';
+import { env } from '../../../env/server';
 
 export const authOptions: NextAuthOptions = {
   // Include user.id on session

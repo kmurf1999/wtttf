@@ -1,13 +1,16 @@
 // src/pages/_app.tsx
-import { httpBatchLink } from "@trpc/client/links/httpBatchLink";
-import { loggerLink } from "@trpc/client/links/loggerLink";
-import { createWSClient, wsLink } from "@trpc/client/links/wsLink";
-import { withTRPC } from "@trpc/next";
-import { SessionProvider } from "next-auth/react";
-import type { AppType } from "next/dist/shared/lib/utils";
-import superjson from "superjson";
-import type { AppRouter } from "../server/router";
-import "../styles/globals.css";
+import { httpBatchLink } from '@trpc/client/links/httpBatchLink';
+import { loggerLink } from '@trpc/client/links/loggerLink';
+import { createWSClient, wsLink } from '@trpc/client/links/wsLink';
+import { withTRPC } from '@trpc/next';
+import { SessionProvider } from 'next-auth/react';
+import getConfig from 'next/config';
+import type { AppType } from 'next/dist/shared/lib/utils';
+import superjson from 'superjson';
+import type { AppRouter } from '../server/router';
+import '../styles/globals.css';
+
+const { APP_URL, WS_URL } = getConfig().publicRuntimeConfig;
 
 const MyApp: AppType = ({
   Component,
@@ -20,21 +23,15 @@ const MyApp: AppType = ({
   );
 };
 
-const getBaseUrl = () => {
-  if (typeof window !== "undefined") return ""; // browser should use relative url
-  if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}`; // SSR should use vercel url
-  return `http://localhost:${process.env.PORT ?? 3000}`; // dev SSR should use localhost
-};
-
 function getEndingLink() {
-  if (typeof window === "undefined") {
+  if (typeof window === 'undefined') {
     return httpBatchLink({
-      url: `${getBaseUrl()}/api/trpc`,
+      url: `${APP_URL}/api/trpc`,
     });
   }
 
   const client = createWSClient({
-    url: process.env.NEXT_PUBLIC_WS_URL || "ws://localhost:3001",
+    url: WS_URL,
   });
 
   return wsLink<AppRouter>({
@@ -48,14 +45,14 @@ export default withTRPC<AppRouter>({
      * If you want to use SSR, you need to use the server's full URL
      * @link https://trpc.io/docs/ssr
      */
-    const url = `${getBaseUrl()}/api/trpc`;
+    const url = `${APP_URL}/api/trpc`;
 
     return {
       links: [
         loggerLink({
           enabled: (opts) =>
-            process.env.NODE_ENV === "development" ||
-            (opts.direction === "down" && opts.result instanceof Error),
+            process.env.NODE_ENV === 'development' ||
+            (opts.direction === 'down' && opts.result instanceof Error),
         }),
         getEndingLink(),
       ],
@@ -73,7 +70,7 @@ export default withTRPC<AppRouter>({
           // delete headers?.connection;
           return {
             ...headers,
-            "x-ssr": "1",
+            'x-ssr': '1',
           };
         }
         return {};
