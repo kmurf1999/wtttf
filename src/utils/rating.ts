@@ -15,7 +15,7 @@ export function calcElo(
   const probA = winProbability(ratingA, ratingB);
   const probB = winProbability(ratingB, ratingA);
   if (winner === 0) {
-    return ratingA + k * (1 - probA), ratingB + k * (0 - probB);
+    return [ratingA + k * (1 - probA), ratingB + k * (0 - probB)];
   }
-  return ratingA + k * (0 - probA), ratingB + k * (1 - probB);
+  return [ratingA + k * (0 - probA), ratingB + k * (1 - probB)];
 }

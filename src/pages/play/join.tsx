@@ -86,7 +86,7 @@ const Join: NextPage = () => {
                     {invite.from.name}
                   </span>
                   <span className="ml-2 text-gray-600 font-mono">
-                    ({invite.from.rating})
+                    ({Math.round(invite.from.rating)})
                   </span>
                   <div className="text-gray-500 text-sm">
                     {invite.from.email}
@@ -109,7 +109,7 @@ const Join: NextPage = () => {
             className="btn btn-primary"
             disabled={!selectedInviteId}
           >
-            Send
+            Accept
             <ArrowRightIcon className="w-5 h-5 ml-2" />
           </button>
         </div>

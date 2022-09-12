@@ -3,36 +3,24 @@ import * as trpc from "@trpc/server";
 import superjson from "superjson";
 import z from "zod";
 import { calcElo } from "../../../utils/rating";
+import { GameState } from "../../gameState";
 import { createProtectedRouter } from "../context";
-
-type GameState = {
-  id: string;
-  players: [
-    {
-      id: string;
-      connected: boolean;
-    }
-  ];
-};
-
-type GameEvent = {
-  gameId: string;
-  type:
-    | "playerConnected"
-    | "playerDisconnected"
-    | "postResult"
-    | "acceptResult"
-    | "rejectResult"
-    | "resign";
-  state: GameState;
-};
 
 async function insertGameResult(
   prisma: PrismaClient,
-  winnerId: string,
-  loserId: string,
-  winnerScore?: number,
-  loserScore?: number
+  {
+    gameId,
+    winnerId,
+    loserId,
+    winnerScore,
+    loserScore,
+  }: {
+    gameId: string;
+    winnerId: string;
+    loserId: string;
+    winnerScore?: number;
+    loserScore?: number;
+  }
 ) {
   const winner = await prisma.user.findUnique({
     where: {
@@ -48,12 +36,9 @@ async function insertGameResult(
     throw new Error("User not found");
   }
 
-  const [winnerRating, loserRating] = calcElo(
-    winner.rating,
-    loser.rating,
-    30,
-    0
-  );
+  const newRatings = calcElo(winner.rating, loser.rating, 30, 0);
+  const winnerRating = newRatings[0] as number;
+  const loserRating = newRatings[1] as number;
 
   const winnerUpdate = prisma.user.update({
     where: {
@@ -79,10 +64,16 @@ async function insertGameResult(
       loserScore,
     },
   });
+  const gameUpdate = prisma.game.delete({
+    where: {
+      id: gameId,
+    },
+  });
   const [res] = await prisma.$transaction([
     gameResult,
     winnerUpdate,
     loserUpdate,
+    gameUpdate,
   ]);
 
   return res;
@@ -90,106 +81,157 @@ async function insertGameResult(
 
 export const playRouter = createProtectedRouter()
   .transformer(superjson)
-  .mutation("resign", {
-    input: z.object({
-      gameId: z.string(),
-    }),
-    resolve: async ({ ctx, input }) => {
-      const game = await ctx.prisma.game.findUnique({
-        where: {
-          id: input.gameId,
-        },
-        select: {
-          id: true,
-          players: {
-            select: {
-              id: true,
-            },
-          },
-        },
-      });
-      if (!game) {
-        throw new Error("Game not found");
-      }
-      if (!game.players.find((player) => player.id === ctx.session.user.id)) {
-        throw new Error("Not a player in this game");
-      }
-      // submit game result
-      const loserId = ctx.session.user.id;
-      const winnerId = game.players.find((player) => player.id !== loserId)
-        ?.id as string;
-
-      await insertGameResult(ctx.prisma, winnerId, loserId);
-      // delete game from cache
-      ctx.cache.delete(game.id);
-      // delete game from db
-      await ctx.prisma.game.delete({
-        where: {
-          id: game.id,
-        },
-      });
-      // nofity opponent that game has ended
-      ctx.ee.emit("gameEvent", {
-        gameId: game.id,
-        type: "resign",
-        state: {},
-      });
-    },
-  })
   .subscription("subscribeToGame", {
     input: z.object({
       gameId: z.string(),
     }),
     resolve: async ({ ctx, input }) => {
       const game = ctx.cache.get(input.gameId) as GameState | undefined;
-
       if (!game) {
         throw new Error("Game not found");
       }
-      if (!game.players.find((player) => player.id === ctx.session.user.id)) {
+      if (
+        !game.data.players.find((player) => player.id === ctx.session.user.id)
+      ) {
         throw new Error("Not a player in this game");
       }
-      return new trpc.Subscription<GameEvent>((emit) => {
-        function onMessage(data: GameEvent) {
-          if (data.gameId === input.gameId) {
-            emit.data(data);
+      return new trpc.Subscription<GameState>((emit) => {
+        function onMessage(state: GameState) {
+          if (state.data.id === input.gameId) {
+            emit.data(state);
           }
         }
 
         ctx.ee.on("gameEvent", onMessage);
-
-        // connect event
-        const game = { ...(ctx.cache.get(input.gameId) as GameState) };
-        const me = game.players.find(
-          (player) => player.id === ctx.session.user.id
-        );
-        if (me) me.connected = true;
+        // send connect event
+        const game = ctx.cache.get(input.gameId) as GameState | undefined;
+        if (!game) {
+          throw new Error("Game not found");
+        }
+        const nextState = game.connect(ctx.session.user.id);
         // update cache
-        ctx.cache.set(input.gameId, game);
-        ctx.ee.emit("gameEvent", {
-          gameId: input.gameId,
-          type: "playerConnected",
-          state: game,
-        });
+        ctx.cache.set(input.gameId, nextState);
+        // emit event
+        ctx.ee.emit("gameEvent", nextState);
 
         return () => {
           // disconnect event
-          const game = { ...(ctx.cache.get(input.gameId) as GameState) };
-          const me = game.players.find(
-            (player) => player.id === ctx.session.user.id
-          );
-          if (me) me.connected = false;
+          const game = ctx.cache.get(input.gameId) as GameState | undefined;
+          if (!game) {
+            throw new Error("Game not found");
+          }
+          const nextState = game.disconnect(ctx.session.user.id);
           // update cache
-          ctx.cache.set(input.gameId, game);
-          ctx.ee.emit("gameEvent", {
-            gameId: input.gameId,
-            type: "playerDisconnected",
-            state: game,
-          });
+          ctx.cache.set(input.gameId, nextState);
+          // emit event
+          ctx.ee.emit("gameEvent", nextState);
 
           ctx.ee.off("gameEvent", onMessage);
         };
       });
+    },
+  })
+  .mutation("postGameResult", {
+    input: z.object({
+      gameId: z.string(),
+      winnerId: z.string(),
+      loserId: z.string(),
+      winnerScore: z.number().optional(),
+      loserScore: z.number().optional(),
+    }),
+    resolve: async ({ ctx, input }) => {
+      // get game from cache
+      const game = ctx.cache.get(input.gameId) as GameState | undefined;
+      if (!game) {
+        throw new Error("Game not found");
+      }
+      const nextState = game.postResult({
+        submittedBy: ctx.session.user.id,
+        ...input,
+      });
+      // update cache
+      ctx.cache.set(input.gameId, nextState);
+      // emit event
+      ctx.ee.emit("gameEvent", nextState);
+    },
+  })
+  .mutation("rejectGameResult", {
+    input: z.object({
+      gameId: z.string(),
+    }),
+    resolve: async ({ ctx, input }) => {
+      // get game from cache
+      const game = ctx.cache.get(input.gameId) as GameState | undefined;
+      if (!game) {
+        throw new Error("Game not found");
+      }
+      const nextState = game.rejectResult();
+      // update cache
+      ctx.cache.set(input.gameId, nextState);
+      // emit event
+      ctx.ee.emit("gameEvent", nextState);
+    },
+  })
+  .mutation("acceptGameResult", {
+    input: z.object({
+      gameId: z.string(),
+    }),
+    resolve: async ({ ctx, input }) => {
+      const game = ctx.cache.get(input.gameId) as GameState | undefined;
+      if (!game) {
+        throw new Error("Game not found");
+      }
+
+      const nextState = game.acceptResult(ctx.session.user.id);
+      if (!nextState.data.result) {
+        throw new Error("Internal error");
+      }
+
+      const gameResult = await insertGameResult(ctx.prisma, {
+        gameId: input.gameId,
+        ...nextState.data.result,
+      });
+      // add result id to event
+      // TODO this should be in resign function
+      nextState.data.resultId = gameResult.id;
+
+      // update cache TODO maybe delete cache entry
+      ctx.cache.set(input.gameId, nextState);
+      // emit event
+      ctx.ee.emit("gameEvent", nextState);
+
+      return gameResult;
+    },
+  })
+  .mutation("resignGame", {
+    input: z.object({
+      gameId: z.string(),
+    }),
+    resolve: async ({ ctx, input }) => {
+      const game = ctx.cache.get(input.gameId) as GameState | undefined;
+      if (!game) {
+        throw new Error("Game not found");
+      }
+
+      const nextState = game.resign(ctx.session.user.id);
+      if (!nextState.data.result) {
+        throw new Error("Internal error");
+      }
+
+      const gameResult = await insertGameResult(ctx.prisma, {
+        gameId: input.gameId,
+        ...nextState.data.result,
+      });
+      // add result id to event
+      // TODO this should be in resign function
+      nextState.data.resultId = gameResult.id;
+
+      // update cache TODO maybe delete cache
+      ctx.cache.set(input.gameId, nextState);
+      // emit
+      ctx.ee.emit("gameEvent", nextState);
+
+      return gameResult;
     },
   })
   .query("getGameById", {

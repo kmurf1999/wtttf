@@ -1,8 +1,8 @@
 import { GameInvite } from "@prisma/client";
 import * as trpc from "@trpc/server";
-import { randomUUID } from "crypto";
 import superjson from "superjson";
 import z from "zod";
+import { createGame } from "../../gameState";
 import { createProtectedRouter } from "../context";
 
 enum Events {
@@ -155,6 +155,7 @@ export const inviteRouter = createProtectedRouter()
           id: true,
           players: {
             select: {
+              id: true,
               image: true,
               name: true,
               email: true,
@@ -164,16 +165,10 @@ export const inviteRouter = createProtectedRouter()
         },
       });
 
-      const gameState = {
-        id: game.id,
-        players: [
-          {
-            id: invite.fromUserId,
-            connected: false,
-          },
-          { id: invite.toUserId, connected: false },
-        ],
-      };
+      const gameState = createGame(
+        game.id,
+        game.players.map((p) => p.id)
+      );
 
       ctx.cache.set(game.id, gameState);
 

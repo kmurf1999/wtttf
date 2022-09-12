@@ -34,7 +34,7 @@ const Player = ({
         </div>
       </div>
       <div className="text-gray-800">{name}</div>
-      <div className="text-gray-400 font-mono">{rating}</div>
+      <div className="text-gray-400 font-mono">{Math.round(rating)}</div>
     </div>
   );
 };
@@ -42,10 +42,16 @@ const Player = ({
 const PendingGameResult = ({
   winner,
   loser,
+  fromMe,
+  gameId,
 }: {
-  winner: { name: string; score: number };
-  loser: { name: string; score: number };
+  fromMe: boolean;
+  gameId: string;
+  winner: { name: string; score?: number };
+  loser: { name: string; score?: number };
 }) => {
+  const declineResult = trpc.useMutation(["game.play.rejectGameResult"]);
+  const acceptResult = trpc.useMutation(["game.play.acceptGameResult"]);
   return (
     <div className="h-full flex flex-row items-center">
       <div className="grow border-r p-4">
@@ -60,20 +66,37 @@ const PendingGameResult = ({
           <div className="text-lg">{loser.score}</div>
         </div>
       </div>
-      <div className="flex flex-col p-4 gap-2">
-        <button className="btn btn-sm btn-primary">Accept</button>
-        <button className="btn btn-sm btn-ghost ">Decline</button>
-      </div>
+      {fromMe ? (
+        <div className="flex flex-col p-4 gap-2">Awaiting opponent</div>
+      ) : (
+        <div className="flex flex-col p-4 gap-2">
+          <button
+            className="btn btn-sm btn-primary"
+            onClick={() => acceptResult.mutate({ gameId })}
+          >
+            Accept
+          </button>
+          <button
+            onClick={() => declineResult.mutate({ gameId })}
+            className="btn btn-sm btn-ghost "
+          >
+            Decline
+          </button>
+        </div>
+      )}
     </div>
   );
 };
 
 const CurrentGame = ({ gameId }: { gameId: string }) => {
   const session = useSession();
+  const router = useRouter();
   const [gameState, setGameState] = useState<GameState | null>(null);
   const game = trpc.useQuery(["game.play.getGameById", { gameId }]);
   const [myScore, setMyScore] = useState<number | null>(null);
   const [theirScore, setTheirScore] = useState<number | null>(null);
+  const postGameResult = trpc.useMutation("game.play.postGameResult");
+  const resignGame = trpc.useMutation("game.play.resignGame");
 
   trpc.useSubscription(["game.play.subscribeToGame", { gameId }], {
     onError: (err) => {
@@ -84,18 +107,23 @@ const CurrentGame = ({ gameId }: { gameId: string }) => {
     },
   });
 
+  if (gameState?.data.status === "finished" && gameState.data.resultId) {
+    // redirect to game result page
+    router.push(`/play/results/${gameState.data.resultId}`);
+  }
+
   if (game.error) {
     // error state
     return null; // TODO
   }
 
-  const me = game.data?.players.find((p) => p.id === session.data?.user?.id);
-  const them = game.data?.players.find((p) => p.id !== session.data?.user?.id);
-
-  if (!game.data || !me || !them) {
+  if (!game.data || !session.data?.user) {
     // loading
     return <div></div>;
   }
+
+  const me = game.data.players.find((p) => p.id === session.data.user?.id)!;
+  const them = game.data.players.find((p) => p.id !== session.data.user?.id)!;
 
   const parseScore = (e: React.ChangeEvent<HTMLInputElement>) => {
     const score = parseInt(e.target.value);
@@ -126,7 +154,7 @@ const CurrentGame = ({ gameId }: { gameId: string }) => {
           image={me.image!}
           rating={me.rating}
           connected={
-            gameState?.state.players.find((p) => p.id === me.id)?.connected ||
+            gameState?.data.players.find((p) => p.id === me.id)?.connected ??
             false
           }
         />
@@ -148,26 +176,68 @@ const CurrentGame = ({ gameId }: { gameId: string }) => {
           image={them.image!}
           rating={them.rating}
           connected={
-            gameState?.state.players.find((p) => p.id === them.id)?.connected ||
+            gameState?.data.players.find((p) => p.id === them.id)?.connected ??
             false
           }
         />
       </div>
 
       <button
-        disabled={!scoreIsValid}
+        disabled={!scoreIsValid || !!gameState?.data.result}
         className="btn btn-primary  w-fit mx-auto"
+        onClick={() => {
+          if (scoreIsValid) {
+            const winnerId = myScore > theirScore ? me.id : them.id;
+            const loserId = myScore > theirScore ? them.id : me.id;
+            const winnerScore = winnerId === me.id ? myScore : theirScore;
+            const loserScore = winnerId === me.id ? theirScore : myScore;
+            postGameResult.mutate({
+              gameId,
+              winnerId,
+              loserId,
+              winnerScore,
+              loserScore,
+            });
+          }
+        }}
       >
         Submit Result
       </button>
 
       <div className="ml-4 mt-4 mb-2 text-gray-400">Pending Results</div>
       <div className="px-4">
-        <div className="w-full bg-gray-50 border border-gray-200 rounded-lg h-28"></div>
+        <div className="w-full bg-gray-50 border border-gray-200 rounded-lg h-28">
+          {gameState?.data.result && (
+            <PendingGameResult
+              gameId={gameId}
+              fromMe={gameState.data.result.submittedBy === me.id}
+              // TODO
+              winner={{
+                name: game.data.players.find(
+                  (p) => p.id === gameState.data.result?.winnerId
+                )?.name!,
+                score: gameState.data.result.winnerScore,
+              }}
+              // TODO
+              loser={{
+                name: game.data.players.find(
+                  (p) => p.id === gameState.data.result?.loserId
+                )?.name!,
+                score: gameState.data.result.loserScore,
+              }}
+            />
+          )}
+        </div>
       </div>
 
       <div className="p-4 bg-gray-100 mt-12 flex flex-row">
-        <button className="btn btn-error btn-outline">
+        <button
+          onClick={() => {
+            resignGame.mutate({ gameId });
+            // TODO - add Are you sure dialog
+          }}
+          className="btn btn-error btn-outline"
+        >
           Leave game
           <FlagIcon className="w-4 h-4 ml-2" />
         </button>
