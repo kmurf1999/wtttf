@@ -67,7 +67,12 @@ const PendingGameResult = ({
         </div>
       </div>
       {fromMe ? (
-        <div className="flex flex-col p-4 gap-2">Awaiting opponent</div>
+        <div className="flex flex-col p-4 gap-2">
+          <div className="text-center wrap">
+            Awaiting
+            <br /> opponent
+          </div>
+        </div>
       ) : (
         <div className="flex flex-col p-4 gap-2">
           <button
@@ -140,10 +145,7 @@ const CurrentGame = ({ gameId }: { gameId: string }) => {
     myScore !== theirScore;
 
   return (
-    <div
-      style={{ width: 600 }}
-      className="flex flex-col  bg-white rounded-lg border border-gray-200 shadow-md dark:bg-gray-800 dark:border-gray-700 overflow-hidden"
-    >
+    <div className="w-full sm:max-w-md flex flex-col bg-white sm:rounded-lg sm:border border-gray-200 shadow-md overflow-hidden">
       <h1 className="mb-4 p-4 w-full text-white bg-gray-900">
         Match with {them.name}
       </h1>
@@ -159,7 +161,7 @@ const CurrentGame = ({ gameId }: { gameId: string }) => {
           }
         />
         <input
-          className="border-2 border-gray-200 rounded-lg w-16  px-0 py-1  text-center text-4xl"
+          className="border-2 border-gray-200 rounded-lg w-16 px-0 py-1 text-center text-4xl"
           type="num"
           value={myScore === null ? '' : myScore}
           onChange={(e) => setMyScore(parseScore(e))}

@@ -1,9 +1,9 @@
-import { useRouter } from "next/router";
+import { useRouter } from 'next/router';
 import {
   GameInviteNotification as GameInviteNotificationType,
   useNotificationStore,
-} from "../../providers/NotifcationProvider";
-import { trpc } from "../../utils/trpc";
+} from '../../providers/NotifcationProvider';
+import { trpc } from '../../utils/trpc';
 
 export default function GameInviteNotification({
   id,
@@ -16,23 +16,23 @@ export default function GameInviteNotification({
   data: GameInviteNotificationType;
 }) {
   const router = useRouter();
-  const acceptInvite = trpc.useMutation(["game.invite.acceptInvite"], {
+  const acceptInvite = trpc.useMutation(['game.invite.acceptInvite'], {
     onSuccess: (data) => {
       router.push(`/play/${data.id}`);
     },
   });
-  const declineInvite = trpc.useMutation(["game.invite.declineInvite"]);
+  const declineInvite = trpc.useMutation(['game.invite.declineInvite']);
   const closeNotification = useNotificationStore(
-    (state) => state.closeNotification
+    (state) => state.closeNotification,
   );
 
   return (
     <div
-      className="p-4 w-full max-w-xs text-gray-500 bg-white rounded-lg shadow-lg dark:bg-gray-800 dark:text-gray-400"
+      className="p-4 w-full max-w-xs text-gray-500 bg-white rounded-lg shadow-lg "
       role="alert"
     >
       <div className="flex">
-        <div className="inline-flex flex-shrink-0 justify-center items-center w-8 h-8 text-blue-500 bg-blue-100 rounded-lg dark:text-blue-300 dark:bg-blue-900">
+        <div className="inline-flex flex-shrink-0 justify-center items-center w-8 h-8 text-blue-500 bg-blue-100 rounded-lg ">
           <svg
             aria-hidden="true"
             className="w-5 h-5"
@@ -49,7 +49,7 @@ export default function GameInviteNotification({
           <span className="sr-only">Refresh icon</span>
         </div>
         <div className="ml-3 text-sm font-normal">
-          <span className="mb-1 text-sm font-semibold text-gray-900 dark:text-white">
+          <span className="mb-1 text-sm font-semibold text-gray-900 ">
             Game Invitation
           </span>
           <div className="mt-1 mb-2 text-sm font-normal">
@@ -59,7 +59,7 @@ export default function GameInviteNotification({
           <div className="grid grid-cols-2 gap-2 mt-4">
             <div>
               <button
-                className="inline-flex justify-center w-full px-2 py-1.5 text-xs font-medium text-center text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-500 dark:hover:bg-blue-600 dark:focus:ring-blue-800"
+                className="inline-flex justify-center w-full px-2 py-1.5 text-xs font-medium text-center text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 "
                 onClick={() => {
                   acceptInvite.mutate({ inviteId });
                   closeNotification(id);

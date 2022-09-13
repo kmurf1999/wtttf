@@ -1,8 +1,8 @@
-import { useId } from "react";
+import { useId } from 'react';
 
 export default function SearchInput({
   placeholder,
-  onSubmit,
+  // onSubmit,
   onChange,
   value,
   onBlur,
@@ -20,7 +20,7 @@ export default function SearchInput({
     <>
       <label
         htmlFor={id}
-        className="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-gray-300"
+        className="mb-2 text-sm font-medium text-gray-900 sr-only "
       >
         Search
       </label>
@@ -28,7 +28,7 @@ export default function SearchInput({
         <div className="flex absolute inset-y-0 left-0 items-center pl-3 pointer-events-none">
           <svg
             aria-hidden="true"
-            className="w-5 h-5 text-gray-500 dark:text-gray-400"
+            className="w-5 h-5 text-gray-500 "
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -45,7 +45,7 @@ export default function SearchInput({
         <input
           type="search"
           id={id}
-          className="block p-4 pl-10 w-full text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:outline-0"
+          className="block p-4 pl-10 w-full text-gray-900 bg-gray-50 rounded-lg border border-gray-300"
           placeholder={placeholder}
           value={value}
           onChange={onChange}
@@ -53,13 +53,6 @@ export default function SearchInput({
           onFocus={onFocus}
           required
         />
-        <button
-          type="submit"
-          className="text-white absolute right-2.5 bottom-2.5 bg-blue-700 hover:bg-blue-800 font-medium rounded-lg text-sm px-4 py-2"
-          onClick={onSubmit}
-        >
-          Search
-        </button>
       </div>
     </>
   );

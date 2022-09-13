@@ -4,8 +4,8 @@ import { getServerAuthSession } from '../server/common/get-server-auth-session';
 
 export default function Login() {
   return (
-    <main className="flex items-center justify-center bg-slate-500 min-h-screen">
-      <div className="flex flex-col p-6 gap-6 bg-white rounded-lg">
+    <main className="bg-slate-100 flex items-center justify-center min-h-screen">
+      <div className="p-6 flex flex-col gap-3 bg-white rounded-lg border border-gray-200 shadow-md dark:bg-gray-800 dark:border-gray-700">
         <h1 className="text-3xl text-center">Sign In</h1>
         <div className="divider" />
         <button

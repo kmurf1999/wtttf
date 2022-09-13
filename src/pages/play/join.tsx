@@ -3,52 +3,49 @@ import {
   ArrowPathIcon,
   ArrowRightIcon,
   XMarkIcon,
-} from "@heroicons/react/24/solid";
-import { NextPage } from "next";
-import Image from "next/image";
-import Link from "next/link";
-import { useRouter } from "next/router";
-import { useState } from "react";
-import Layout from "../../components/Layout";
-import { trpc } from "../../utils/trpc";
+} from '@heroicons/react/24/solid';
+import { NextPage } from 'next';
+import Image from 'next/image';
+import Link from 'next/link';
+import { useRouter } from 'next/router';
+import { useState } from 'react';
+import Layout from '../../components/Layout';
+import { trpc } from '../../utils/trpc';
 
 const Join: NextPage = () => {
   const router = useRouter();
   const ctx = trpc.useContext();
-  const invites = trpc.useQuery(["game.invite.getReceivedInvites"]);
-  const declineInvite = trpc.useMutation(["game.invite.declineInvite"], {
+  const invites = trpc.useQuery(['game.invite.getReceivedInvites']);
+  const declineInvite = trpc.useMutation(['game.invite.declineInvite'], {
     onSuccess: (data) => {
       if (selectedInviteId === data.id) {
         setSelectedInviteId(null);
       }
-      ctx.invalidateQueries(["game.invite.getReceivedInvites"]);
+      ctx.invalidateQueries(['game.invite.getReceivedInvites']);
     },
   });
-  const acceptInvite = trpc.useMutation(["game.invite.acceptInvite"], {
+  const acceptInvite = trpc.useMutation(['game.invite.acceptInvite'], {
     onSuccess: (game) => {
-      ctx.invalidateQueries(["game.invite.getReceivedInvites"]);
+      ctx.invalidateQueries(['game.invite.getReceivedInvites']);
       router.push(`/play/${game.id}`);
     },
   });
   const [selectedInviteId, setSelectedInviteId] = useState<string | null>(null);
   return (
     <Layout>
-      <div
-        style={{ width: 600 }}
-        className="p-6 flex flex-col gap-3 bg-white rounded-lg border border-gray-200 shadow-md dark:bg-gray-800 dark:border-gray-700"
-      >
+      <div className="w-full p-6 flex flex-col gap-3 bg-white sm:rounded-lg border-b sm:border border-gray-200 shadow-md sm:max-w-md">
         <div className="flex flex-row items-center gap-2">
           <Link href="/">
             <a className="btn btn-sm btn-ghost btn-circle">
               <ArrowLeftIcon className="h-5" />
             </a>
           </Link>
-          <h5 className="text-lg font-bold tracking-tight text-gray-900 dark:text-white">
+          <h5 className="text-lg font-bold tracking-tight text-gray-900 ">
             Join Game
           </h5>
         </div>
         <div className="text-gray-400">
-          Pending invites{" "}
+          Pending invites{' '}
           <button
             className="ml-2 inline-flex btn btn-sm btn-ghost"
             onClick={() => invites.refetch()}
@@ -65,11 +62,11 @@ const Join: NextPage = () => {
               )}
               <button
                 className={[
-                  "w-full p-4 flex flex-row items-center",
+                  'w-full p-4 flex flex-row items-center',
                   selectedInviteId === invite.id
-                    ? "bg-purple-100"
-                    : "hover:bg-gray-100",
-                ].join(" ")}
+                    ? 'bg-purple-100'
+                    : 'hover:bg-gray-100',
+                ].join(' ')}
                 onClick={() => setSelectedInviteId(invite.id)}
               >
                 <div className="avatar online mr-2">
