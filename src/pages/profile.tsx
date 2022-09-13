@@ -1,16 +1,25 @@
 import type { NextPage } from "next";
 import { useSession } from "next-auth/react";
-import { useState } from "react";
+import { useForm } from "react-hook-form";
 import Layout from "../components/Layout";
+
+export interface FormData {
+  email: string;
+  name: string;
+}
 
 const Profile: NextPage = () => {
   const session = useSession();
   const user = session.data?.user;
-  const [ userName, setUserName ] = useState<string>(user?.name || '');
+  const { register, handleSubmit } = useForm();
   
-  const submit = (data) => {
-    console.log('TEST', data);
-    window.alert('Changes Saved!');
+  const onSubmit = (data: FormData) => {
+    window.alert(JSON.stringify(data));
+  }
+  
+  if (!user) {
+    // loading state
+    return null; 
   }
 
   return (
@@ -23,10 +32,17 @@ const Profile: NextPage = () => {
           {'Edit your personal information here. Or click "CANCEL" to close this page.'}
         </p>
         
-        <form onSubmit={submit} className="flex flex-col gap-8">
-          <div className="grid">
-            <p>TEST</p>
-            <p>{userName}</p>
+        <form onSubmit={handleSubmit((d) => onSubmit(d as FormData))} className="flex flex-col gap-8">
+          <div className="grid gap-4">
+            <div className="flex flex-row gap-2">
+              <label htmlFor="email">Email:</label>
+              <input {...register("email"), { required: true, defaultValue: user.email || undefined }} />
+            </div>
+
+            <div className="flex flex-row gap-2">
+              <label htmlFor="name">Name:</label>
+              <input {...register("name"), { required: true, defaultValue: user.name || undefined }} />
+            </div>
           </div>
 
           <div className="flex flex-row gap-2">
@@ -35,9 +51,7 @@ const Profile: NextPage = () => {
             </a>
             <input type="submit" value="save changes" className="btn btn-primary" />
           </div>
-          
         </form>
-
       </div>
     </Layout>
   );
