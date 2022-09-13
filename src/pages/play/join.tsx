@@ -33,82 +33,87 @@ const Join: NextPage = () => {
   const [selectedInviteId, setSelectedInviteId] = useState<string | null>(null);
   return (
     <Layout>
-      <div className="w-full p-6 flex flex-col gap-3 bg-white sm:rounded-lg border-b sm:border border-gray-200 shadow-md sm:max-w-md">
-        <div className="flex flex-row items-center gap-2">
-          <Link href="/">
-            <a className="btn btn-sm btn-ghost btn-circle">
-              <ArrowLeftIcon className="h-5" />
-            </a>
-          </Link>
+      <div className="w-full max-w-md flex flex-col gap-2">
+        <Link href="/">
+          <a className=" mt-2 w-fit btn btn-sm btn-ghost text-gray-400 ">
+            <ArrowLeftIcon className="w-4 h-4 mr-2" />
+            Back to home
+          </a>
+        </Link>
+        <div className="w-full p-6 flex flex-col gap-3 bg-white rounded border border-gray-200 shadow-md sm:max-w-md">
           <h5 className="text-lg font-bold tracking-tight text-gray-900 ">
             Join Game
           </h5>
-        </div>
-        <div className="text-gray-400">
-          Pending invites{' '}
-          <button
-            className="ml-2 inline-flex btn btn-sm btn-ghost"
-            onClick={() => invites.refetch()}
-          >
-            Refresh
-            <ArrowPathIcon className="ml-2 w-5" />
-          </button>
-        </div>
-        <ul className="h-60 overflow-y-auto bg-gray-50 border border-gray-300 rounded-lg flex flex-col ">
-          {invites.data?.map((invite) => (
-            <li key={invite.id} className="relative">
-              {invite.id === selectedInviteId && (
-                <div className="absolute w-1 h-full bg-purple-500 l-0 t-0" />
-              )}
-              <button
-                className={[
-                  'w-full p-4 flex flex-row items-center',
-                  selectedInviteId === invite.id
-                    ? 'bg-purple-100'
-                    : 'hover:bg-gray-100',
-                ].join(' ')}
-                onClick={() => setSelectedInviteId(invite.id)}
-              >
-                <div className="avatar online mr-2">
-                  <div className="w-12 mask mask-circle">
-                    <Image
-                      layout="fill"
-                      src={invite.from.image!}
-                      alt="Avatar"
-                    />
-                  </div>
-                </div>
-                <div className="text-start">
-                  <span className="font-medium text-gray-800">
-                    {invite.from.name}
-                  </span>
-                  <span className="ml-2 text-gray-600 font-mono">
-                    ({Math.round(invite.from.rating)})
-                  </span>
-                  <div className="text-gray-500 text-sm">
-                    {invite.from.email}
-                  </div>
-                </div>
-                <div className="grow" />
+          <div className="text-gray-400">
+            Pending invites{' '}
+            <button
+              className="ml-2 inline-flex btn btn-sm btn-ghost"
+              onClick={() => invites.refetch()}
+            >
+              Refresh
+              <ArrowPathIcon className="ml-2 w-5" />
+            </button>
+          </div>
+          <ul className="h-60 overflow-y-auto bg-gray-50 border border-gray-300 rounded-lg flex flex-col ">
+            {invites.data?.map((invite) => (
+              <li key={invite.id} className="relative">
+                {invite.id === selectedInviteId && (
+                  <div className="absolute w-1 h-full bg-purple-500 l-0 t-0" />
+                )}
                 <button
-                  className="btn btn-sm btn-ghost w-10 h-10 p-2 text-gray-400 hover:text-red-600"
-                  onClick={() => declineInvite.mutate({ inviteId: invite.id })}
+                  className={[
+                    'w-full p-4 flex flex-row items-center',
+                    selectedInviteId === invite.id
+                      ? 'bg-purple-100'
+                      : 'hover:bg-gray-100',
+                  ].join(' ')}
+                  onClick={() => setSelectedInviteId(invite.id)}
                 >
-                  <XMarkIcon className="w-full" />
+                  <div className="avatar online mr-2">
+                    <div className="w-12 mask mask-circle">
+                      <Image
+                        layout="fill"
+                        src={invite.from.image!}
+                        alt="Avatar"
+                      />
+                    </div>
+                  </div>
+                  <div className="text-start">
+                    <span className="font-medium text-gray-800">
+                      {invite.from.name}
+                    </span>
+                    <span className="ml-2 text-gray-600 font-mono">
+                      ({Math.round(invite.from.rating)})
+                    </span>
+                    <div className="text-gray-500 text-sm">
+                      {invite.from.email}
+                    </div>
+                  </div>
+                  <div className="grow" />
+                  <button
+                    className="btn btn-sm btn-ghost w-10 h-10 p-2 text-gray-400 hover:text-red-600"
+                    onClick={() =>
+                      declineInvite.mutate({ inviteId: invite.id })
+                    }
+                  >
+                    <XMarkIcon className="w-full" />
+                  </button>
                 </button>
-              </button>
-            </li>
-          ))}
-        </ul>
-        <div className="mt-4 w-full flex flex-row justify-end">
-          <button
-            onClick={() => acceptInvite.mutate({ inviteId: selectedInviteId! })}
-            className="btn btn-primary"
-            disabled={!selectedInviteId}
-          >
-            Accept
-            <ArrowRightIcon className="w-5 h-5 ml-2" />
-          </button>
+              </li>
+            ))}
+          </ul>
+          <div className="mt-4 w-full flex flex-row justify-end">
+            <button
+              onClick={() =>
+                acceptInvite.mutate({ inviteId: selectedInviteId! })
+              }
+              className="btn btn-primary"
+              disabled={!selectedInviteId}
+            >
+              Accept
+              <ArrowRightIcon className="w-5 h-5 ml-2" />
+            </button>
+          </div>
         </div>
       </div>
     </Layout>

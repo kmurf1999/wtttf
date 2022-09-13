@@ -145,7 +145,7 @@ const CurrentGame = ({ gameId }: { gameId: string }) => {
     myScore !== theirScore;
 
   return (
-    <div className="w-full sm:max-w-md flex flex-col bg-white sm:rounded-lg sm:border border-gray-200 shadow-md overflow-hidden">
+    <div className="w-full sm:max-w-md flex flex-col bg-white rounded border border-gray-200 shadow-md overflow-hidden">
       <h1 className="mb-4 p-4 w-full text-white bg-gray-900">
         Match with {them.name}
       </h1>

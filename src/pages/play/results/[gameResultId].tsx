@@ -47,12 +47,12 @@ const GameResult = ({ id }: { id: string }) => {
   return (
     <div className="w-full max-w-md flex flex-col gap-2">
       <Link href="/">
-        <a className="mt-2 w-fit btn btn-sm btn-ghost text-gray-400 ">
+        <a className=" mt-2 w-fit btn btn-sm btn-ghost text-gray-400 ">
           <ArrowLeftIcon className="w-4 h-4 mr-2" />
           Back to home
         </a>
       </Link>
-      <div className="max-w-md w-full p-6 flex flex-col gap-3 bg-white sm:rounded-lg sm:border border-gray-200 shadow-md dark:bg-gray-800 dark:border-gray-700">
+      <div className="w-full p-6 flex flex-col gap-3 bg-white rounded border border-gray-200 shadow-md dark:bg-gray-800 dark:border-gray-700">
         <div className="text-gray-400">{date.toDateString()}</div>
         <div className="mt-4 flex flex-row items-center justify-around">
           <Player

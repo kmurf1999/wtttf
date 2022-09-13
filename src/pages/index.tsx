@@ -5,7 +5,7 @@ import { getServerAuthSession } from '../server/common/get-server-auth-session';
 const Home: NextPage = () => {
   return (
     <Layout>
-      <div className="w-full p-6 flex flex-col gap-3 bg-white sm:rounded-lg border-b sm:border border-gray-200 shadow-md sm:max-w-md">
+      <div className="w-full p-6 flex flex-col gap-3 bg-white rounded border border-gray-200 shadow-md sm:max-w-md">
         <h5 className="mb-2 text-2xl font-bold tracking-tight text-gray-900 ">
           Play now
         </h5>
