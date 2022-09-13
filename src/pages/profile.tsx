@@ -23,8 +23,8 @@ const Profile: NextPage = () => {
           {'Edit your personal information here. Or click "CANCEL" to close this page.'}
         </p>
         
-        <form onSubmit={submit} className="flex flex-column gap-8">
-          <div className="flex flex-row gap-4">
+        <form onSubmit={submit} className="flex flex-col gap-8">
+          <div className="grid">
             <p>TEST</p>
             <p>{userName}</p>
           </div>
@@ -35,6 +35,7 @@ const Profile: NextPage = () => {
             </a>
             <input type="submit" value="save changes" className="btn btn-primary" />
           </div>
+          
         </form>
 
       </div>
