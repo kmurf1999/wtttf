@@ -16,7 +16,7 @@ export const protectedExampleRouter = createProtectedRouter()
       return await ctx.prisma.user.findMany({
         where: {
           name: { contains: input.name },
-          // id: { not: ctx.session.user.id },
+          id: { not: ctx.session.user.id },
         },
         select: {
           id: true,
@@ -26,31 +26,6 @@ export const protectedExampleRouter = createProtectedRouter()
           email: true,
         },
         take: 10,
-      });
-    },
-  })
-  .query("getGameInProgress", {
-    resolve: async ({ ctx }) => {
-      const me = await ctx.prisma.user.findUnique({
-        where: { id: ctx.session.user.id },
-      });
-      if (!me?.gameInProgressId) {
-        throw new Error("No game in progress");
-      }
-      return await ctx.prisma.gameInProgress.findUnique({
-        where: {
-          id: me.gameInProgressId,
-        },
-        include: {
-          players: {
-            select: {
-              name: true,
-              rating: true,
-              image: true,
-              id: true,
-            },
-          },
-        },
       });
     },
   });

@@ -6,13 +6,22 @@
     "dev:next": "next dev",
     "dev:ws": "ts-node-dev --project tsconfig.server.json --respawn --transpile-only src/server/wsServer.ts",
     "dev": "run-p dev:*",
-    "build": "next build",
-    "start": "next start",
+    "build:1-generate": "prisma generate",
+    "build:2-migrate": "prisma migrate deploy",
+    "build:3-next": "cross-env NODE_ENV=production next build",
+    "build:4-server": "tsc --project tsconfig.server.json",
+    "build": "run-s build:*",
+    "start": "cross-env NODE_ENV=production node dist/src/server/prodServer.js",
     "lint": "next lint",
     "postinstall": "prisma generate"
   },
   "prisma": {
     "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"
+  },
+  "prettier": {
+    "printWidth": 80,
+    "trailingComma": "all",
+    "singleQuote": true
   },
   "dependencies": {
     "@heroicons/react": "^2.0.10",
@@ -25,10 +34,11 @@
     "daisyui": "^2.25.0",
     "next": "12.2.5",
     "next-auth": "^4.10.3",
-    "node-fetch": "^2.6.1",
+    "node-fetch": "^2.6.7",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-query": "^3.39.2",
+    "sharp": "^0.31.0",
     "superjson": "^1.9.1",
     "ws": "^8.8.1",
     "zod": "^3.18.0",
@@ -36,6 +46,7 @@
   },
   "devDependencies": {
     "@types/node": "^18.0.0",
+    "@types/node-fetch": "^2.6.2",
     "@types/react": "18.0.14",
     "@types/react-dom": "18.0.5",
     "@types/ws": "^8.5.3",

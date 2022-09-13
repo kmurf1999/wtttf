@@ -2,6 +2,7 @@ import { GameInvite } from "@prisma/client";
 import * as trpc from "@trpc/server";
 import superjson from "superjson";
 import z from "zod";
+import { createGame } from "../../gameState";
 import { createProtectedRouter } from "../context";
 
 enum Events {
@@ -82,6 +83,7 @@ export const inviteRouter = createProtectedRouter()
               name: true,
               rating: true,
               image: true,
+              email: true,
             },
           },
         },
@@ -142,18 +144,33 @@ export const inviteRouter = createProtectedRouter()
       // delete invite
       await ctx.prisma.gameInvite.delete({ where: { id: input.inviteId } });
       // create game in progress
+
       const game = await ctx.prisma.game.create({
         data: {
           players: {
-            connect: [
-              {
-                id: invite.fromUserId,
-              },
-              { id: invite.toUserId },
-            ],
+            connect: [{ id: invite.fromUserId }, { id: invite.toUserId }],
+          },
+        },
+        select: {
+          id: true,
+          players: {
+            select: {
+              id: true,
+              image: true,
+              name: true,
+              email: true,
+              rating: true,
+            },
           },
         },
       });
+
+      const gameState = createGame(
+        game.id,
+        game.players.map((p) => p.id)
+      );
+
+      ctx.cache.set(game.id, gameState);
 
       // notify other player that game is starting
       ctx.ee.emit(Events.ACCEPT_INVITE, {

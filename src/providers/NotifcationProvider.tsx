@@ -1,14 +1,14 @@
-import { inferSubscriptionOutput } from "@trpc/server";
-import create from "zustand";
-import { AppRouter } from "../server/router";
+import { inferSubscriptionOutput } from '@trpc/server';
+import create from 'zustand';
+import { AppRouter } from '../server/router';
 
-const NOTIFICATION_TIMEOUT = 10000; // 10 seconds
+const NOTIFICATION_TIMEOUT = 100000; // 10 seconds
 
-export type NotifcationType = "GameInvite";
+export type NotifcationType = 'GameInvite';
 
 export type GameInviteNotification = inferSubscriptionOutput<
   AppRouter,
-  "game.invite.streamReceivedInvites"
+  'game.invite.streamReceivedInvites'
 >;
 
 type Notification = {
@@ -20,7 +20,7 @@ type Notification = {
 interface NotificationStore {
   notifications: Notification[];
   closeNotification: (id: string) => void;
-  pushNotification: (notification: Omit<Notification, "id">) => void;
+  pushNotification: (notification: Omit<Notification, 'id'>) => void;
 }
 
 export const useNotificationStore = create<NotificationStore>((set) => ({
@@ -30,7 +30,7 @@ export const useNotificationStore = create<NotificationStore>((set) => ({
       notifications: state.notifications.filter((n) => n.id !== id),
     }));
   },
-  pushNotification: (notification: Omit<Notification, "id">) => {
+  pushNotification: (notification: Omit<Notification, 'id'>) => {
     const id = Math.random().toString(36).substring(2, 9);
     set((state) => ({
       notifications: [...state.notifications, { ...notification, id }],

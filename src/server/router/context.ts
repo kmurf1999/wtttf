@@ -9,6 +9,7 @@ import ws from "ws";
 import { prisma } from "../db/client";
 
 const ee = new EventEmitter();
+const cache = new Map<string, any>();
 
 export const createContext = async ({
   req,
@@ -24,6 +25,7 @@ export const createContext = async ({
     session,
     prisma,
     ee,
+    cache,
   };
 };
 
