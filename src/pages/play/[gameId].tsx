@@ -145,7 +145,7 @@ const CurrentGame = ({ gameId }: { gameId: string }) => {
     myScore !== theirScore;
 
   return (
-    <div className="w-full sm:max-w-md flex flex-col bg-white rounded border border-gray-200 shadow-md overflow-hidden">
+    <div className="w-full sm:max-w-md flex flex-col bg-white sm:rounded border-b sm:border border-gray-200 sm:shadow-md overflow-hidden">
       <h1 className="mb-4 p-4 w-full text-white bg-gray-900">
         Match with {them.name}
       </h1>
@@ -186,7 +186,7 @@ const CurrentGame = ({ gameId }: { gameId: string }) => {
 
       <button
         disabled={!scoreIsValid || !!gameState?.data.result}
-        className="btn btn-primary  w-fit mx-auto"
+        className="btn btn-primary w-fit mx-auto"
         onClick={() => {
           if (scoreIsValid) {
             const winnerId = myScore > theirScore ? me.id : them.id;
@@ -232,7 +232,7 @@ const CurrentGame = ({ gameId }: { gameId: string }) => {
         </div>
       </div>
 
-      <div className="p-4 bg-gray-100 mt-12 flex flex-row">
+      <div className="p-4 border-t mt-12 flex flex-row">
         <button
           onClick={() => {
             resignGame.mutate({ gameId });

@@ -33,14 +33,14 @@ const Join: NextPage = () => {
   const [selectedInviteId, setSelectedInviteId] = useState<string | null>(null);
   return (
     <Layout>
-      <div className="w-full max-w-md flex flex-col gap-2">
+      <div className="w-full sm:max-w-md flex flex-col gap-2">
         <Link href="/">
           <a className=" mt-2 w-fit btn btn-sm btn-ghost text-gray-400 ">
             <ArrowLeftIcon className="w-4 h-4 mr-2" />
             Back to home
           </a>
         </Link>
-        <div className="w-full p-6 flex flex-col gap-3 bg-white rounded border border-gray-200 shadow-md sm:max-w-md">
+        <div className="w-full p-6 flex flex-col gap-3 bg-white sm:rounded border-b border-t sm:border border-gray-200 sm:shadow-md">
           <h5 className="text-lg font-bold tracking-tight text-gray-900 ">
             Join Game
           </h5>
