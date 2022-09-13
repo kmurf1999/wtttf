@@ -1,8 +1,18 @@
-import type { GetServerSidePropsContext, NextPage } from "next";
+import type { NextPage } from "next";
+import { useSession } from "next-auth/react";
+import { useState } from "react";
 import Layout from "../components/Layout";
-import { getServerAuthSession } from "../server/common/get-server-auth-session";
 
 const Profile: NextPage = () => {
+  const session = useSession();
+  const user = session.data?.user;
+  const [ userName, setUserName ] = useState<string>(user?.name || '');
+  
+  const submit = (data) => {
+    console.log('TEST', data);
+    window.alert('Changes Saved!');
+  }
+
   return (
     <Layout>
       <div className="p-6 max-w-sm bg-white rounded-lg border border-gray-200 shadow-md dark:bg-gray-800 dark:border-gray-700">
@@ -12,15 +22,21 @@ const Profile: NextPage = () => {
         <p className="mb-6 font-normal text-gray-700 dark:text-gray-400">
           {'Edit your personal information here. Or click "CANCEL" to close this page.'}
         </p>
+        
+        <form onSubmit={submit} className="flex flex-column gap-8">
+          <div className="flex flex-row gap-4">
+            <p>TEST</p>
+            <p>{userName}</p>
+          </div>
 
-        <div className="flex flex-row gap-2">
-          <a href="../" className="btn btn-primary btn-outline">
-            cancel
-          </a>
-          <a href="../" className="btn btn-primary">
-            save changes
-          </a>
-        </div>
+          <div className="flex flex-row gap-2">
+            <a href="../" className="btn btn-primary btn-outline">
+              cancel
+            </a>
+            <input type="submit" value="save changes" className="btn btn-primary" />
+          </div>
+        </form>
+
       </div>
     </Layout>
   );
