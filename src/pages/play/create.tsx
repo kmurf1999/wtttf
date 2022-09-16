@@ -70,7 +70,9 @@ const Create: NextPage = () => {
                     <span className="ml-2 text-gray-600 font-mono">
                       ({Math.round(player.rating)})
                     </span>
-                    <div className="text-gray-500 text-sm">{player.email}</div>
+                    <div className="text-gray-500 text-sm text-ellipsis">
+                      {player.email}
+                    </div>
                   </div>
                 </button>
               </li>

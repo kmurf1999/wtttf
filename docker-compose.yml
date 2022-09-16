@@ -1,0 +1,47 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    env_file:
+      - .env
+    environment:
+      DATABASE_URL: mysql://root:1234@db:3306/pong
+    restart: always
+    depends_on:
+      - db
+      - redis
+    ports:
+      - '3000:3000'
+      - '3001:3001'
+    volumes:
+      - .:/app
+      - /app/node_modules
+    working_dir: /app
+
+  db:
+    image: mysql:8.0
+    restart: always
+    ports:
+      - '6033:3306'
+    environment:
+      MYSQL_ROOT_PASSWORD: 1234
+      MYSQL_DATABASE: pong
+    volumes:
+      - db:/var/lib/mysql
+
+  redis:
+    image: redis:6.2-alpine
+    restart: always
+    ports:
+      - '6379:6379'
+    volumes:
+      - redis:/data
+
+volumes:
+  redis:
+    driver: local
+  db:
+    driver: local

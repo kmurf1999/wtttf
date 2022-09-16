@@ -1,12 +1,12 @@
 // src/server/router/context.ts
-import * as trpc from "@trpc/server";
-import * as trpcNext from "@trpc/server/adapters/next";
-import { NodeHTTPCreateContextFnOptions } from "@trpc/server/dist/declarations/src/adapters/node-http";
-import EventEmitter from "events";
-import { IncomingMessage } from "http";
-import { getSession } from "next-auth/react";
-import ws from "ws";
-import { prisma } from "../db/client";
+import * as trpc from '@trpc/server';
+import * as trpcNext from '@trpc/server/adapters/next';
+import { NodeHTTPCreateContextFnOptions } from '@trpc/server/dist/declarations/src/adapters/node-http';
+import EventEmitter from 'events';
+import { IncomingMessage } from 'http';
+import { getSession } from 'next-auth/react';
+import ws from 'ws';
+import { prisma } from '../db/client';
 
 const ee = new EventEmitter();
 const cache = new Map<string, any>();
@@ -39,7 +39,7 @@ export const createRouter = () => trpc.router<Context>();
 export function createProtectedRouter() {
   return createRouter().middleware(({ ctx, next }) => {
     if (!ctx.session || !ctx.session.user) {
-      throw new trpc.TRPCError({ code: "UNAUTHORIZED" });
+      throw new trpc.TRPCError({ code: 'UNAUTHORIZED' });
     }
     return next({
       ctx: {
