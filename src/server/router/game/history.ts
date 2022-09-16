@@ -1,10 +1,10 @@
-import { createProtectedRouter } from "../context";
-import superjson from "superjson";
-import z from "zod";
+import { createProtectedRouter } from '../context';
+import superjson from 'superjson';
+import z from 'zod';
 
 export const historyRouter = createProtectedRouter()
   .transformer(superjson)
-  .query("getById", {
+  .query('getById', {
     input: z.object({
       id: z.string(),
     }),

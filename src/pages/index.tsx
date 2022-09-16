@@ -1,28 +1,35 @@
+import { PlusIcon } from '@heroicons/react/24/solid';
 import type { GetServerSidePropsContext, NextPage } from 'next';
+import Link from 'next/link';
 import Layout from '../components/Layout';
+import PlayerRankingTable from '../components/PlayerRankingTable';
 import { getServerAuthSession } from '../server/common/get-server-auth-session';
 
 const Home: NextPage = () => {
   return (
     <Layout>
-      <div className="w-full sm:max-w-md p-6 flex flex-col gap-3 bg-white sm:rounded sm:border border-gray-200 sm:shadow-md">
-        <h5 className="mb-2 text-2xl font-bold tracking-tight text-gray-900 ">
+      <div className="w-full sm:max-w-md p-6 flex flex-col gap-3 ">
+        <h5 className="text-2xl font-bold tracking-tight text-gray-900 ">
           Play now
         </h5>
-        <p className="mb-6 font-normal text-gray-700 ">
-          Create a game to invite an existing player or join a game to accept an
+        <p className="mb-2 font-normal text-gray-400 ">
+          Create a game to invite a player or join a game to accept an
           invitation.
         </p>
 
         <div className="flex flex-row gap-2">
-          <a href="play/join" className="btn btn-primary btn-outline">
-            join game
-          </a>
-          <a href="play/create" className="btn btn-primary">
-            create game
-          </a>
+          <Link href="play/create">
+            <a className="btn btn-primary">
+              <PlusIcon className="w-4 h-4 mr-2 text-white" />
+              create game
+            </a>
+          </Link>
+          <Link href="play/join">
+            <a className="btn btn-outline">join game</a>
+          </Link>
         </div>
       </div>
+      <PlayerRankingTable />
     </Layout>
   );
 };

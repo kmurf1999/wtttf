@@ -27,7 +27,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       <div className="h-screen max-h-screen flex flex-col">
         <nav className="w-full h-16 bg-white border-b"></nav>
         <div className="grow overflow-y-auto flex flex-col">
-          <main className="relative grow bg-slate-100 flex flex-col sm:items-center sm:justify-center">
+          <main className="relative grow flex flex-col sm:items-center sm:justify-center ">
             <NotificationCenter />
             {children}
           </main>
