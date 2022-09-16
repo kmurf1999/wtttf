@@ -1,4 +1,3 @@
-// @ts-check
 import { z } from 'zod';
 
 /**
@@ -7,6 +6,7 @@ import { z } from 'zod';
  */
 export const serverSchema = z.object({
   DATABASE_URL: z.string().url(),
+  REDIS_URL: z.string().url(),
   NODE_ENV: z.enum(['development', 'test', 'production']),
   NEXTAUTH_SECRET: z.string(),
   NEXTAUTH_URL: z.string().url(),
@@ -22,7 +22,6 @@ export const serverSchema = z.object({
  * To expose them to the client, prefix them with `NEXT_PUBLIC_`.
  */
 export const clientSchema = z.object({
-  // NEXT_PUBLIC_BAR: z.string(),
   NEXT_PUBLIC_WS_URL: z.string().url(),
   NEXT_PUBLIC_APP_URL: z.string().url(),
 });
@@ -31,9 +30,12 @@ export const clientSchema = z.object({
  * You can't destruct `process.env` as a regular object, so you have to do
  * it manually here. This is because Next.js evaluates this at build time,
  * and only used environment variables are included in the build.
- * @type {{ [k in keyof z.infer<typeof clientSchema>]: z.infer<typeof clientSchema>[k] | undefined }}
  */
-export const clientEnv = {
+export const clientEnv: {
+  [k in keyof z.infer<typeof clientSchema>]:
+    | z.infer<typeof clientSchema>[k]
+    | undefined;
+} = {
   NEXT_PUBLIC_WS_URL: process.env.NEXT_PUBLIC_WS_URL,
   NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL,
 };

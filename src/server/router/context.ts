@@ -2,14 +2,15 @@
 import * as trpc from '@trpc/server';
 import * as trpcNext from '@trpc/server/adapters/next';
 import { NodeHTTPCreateContextFnOptions } from '@trpc/server/dist/declarations/src/adapters/node-http';
-import EventEmitter from 'events';
 import { IncomingMessage } from 'http';
+import Redis from 'ioredis';
 import { getSession } from 'next-auth/react';
 import ws from 'ws';
 import { prisma } from '../db/client';
 
-const ee = new EventEmitter();
-const cache = new Map<string, any>();
+// const ee = new EventEmitter();
+// const cache = new Map<string, any>();
+const redis = new Redis(process.env.REDIS_URL || 'redis://localhost:6379');
 
 export const createContext = async ({
   req,
@@ -24,8 +25,9 @@ export const createContext = async ({
     res,
     session,
     prisma,
-    ee,
-    cache,
+    // ee,
+    // cache,
+    redis,
   };
 };
 

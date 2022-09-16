@@ -32,6 +32,7 @@
     "@trpc/react": "^9.27.2",
     "@trpc/server": "^9.27.2",
     "daisyui": "^2.25.0",
+    "ioredis": "^5.2.3",
     "next": "12.2.5",
     "next-auth": "^4.10.3",
     "node-fetch": "^2.6.7",

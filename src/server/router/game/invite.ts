@@ -1,13 +1,13 @@
-import { GameInvite } from "@prisma/client";
-import * as trpc from "@trpc/server";
-import superjson from "superjson";
-import z from "zod";
-import { createGame } from "../../gameState";
-import { createProtectedRouter } from "../context";
+import { GameInvite } from '@prisma/client';
+import * as trpc from '@trpc/server';
+import superjson from 'superjson';
+import z from 'zod';
+import { createGame } from '../../gameState';
+import { createProtectedRouter } from '../context';
 
 enum Events {
-  SEND_INVITE = "SEND_INVITE",
-  ACCEPT_INVITE = "ACCEPT_INVITE",
+  SEND_INVITE = 'SEND_INVITE',
+  ACCEPT_INVITE = 'ACCEPT_INVITE',
 }
 
 type SendInviteEvent = GameInvite & {
@@ -22,7 +22,7 @@ type AcceptInviteEvent = { id: string; players: { id: string }[] };
 
 export const inviteRouter = createProtectedRouter()
   .transformer(superjson)
-  .subscription("streamAcceptedInvites", {
+  .subscription('streamAcceptedInvites', {
     resolve: async ({ ctx }) => {
       return new trpc.Subscription<AcceptInviteEvent>((emit) => {
         function onMessage(data: AcceptInviteEvent) {
@@ -31,14 +31,14 @@ export const inviteRouter = createProtectedRouter()
           }
         }
 
-        ctx.ee.on(Events.ACCEPT_INVITE, onMessage);
+        ctx.redis.on(Events.ACCEPT_INVITE, onMessage);
         return () => {
-          ctx.ee.off(Events.ACCEPT_INVITE, onMessage);
+          ctx.redis.off(Events.ACCEPT_INVITE, onMessage);
         };
       });
     },
   })
-  .subscription("streamReceivedInvites", {
+  .subscription('streamReceivedInvites', {
     resolve: async ({ ctx }) => {
       return new trpc.Subscription<SendInviteEvent>((emit) => {
         function onMessage(data: SendInviteEvent) {
@@ -47,15 +47,15 @@ export const inviteRouter = createProtectedRouter()
           }
         }
 
-        ctx.ee.on(Events.SEND_INVITE, onMessage);
+        ctx.redis.on(Events.SEND_INVITE, onMessage);
 
         return () => {
-          ctx.ee.off(Events.SEND_INVITE, onMessage);
+          ctx.redis.off(Events.SEND_INVITE, onMessage);
         };
       });
     },
   })
-  .query("getSentInvites", {
+  .query('getSentInvites', {
     resolve: async ({ ctx }) => {
       return await ctx.prisma.gameInvite.findMany({
         where: {
@@ -71,7 +71,7 @@ export const inviteRouter = createProtectedRouter()
       });
     },
   })
-  .query("getReceivedInvites", {
+  .query('getReceivedInvites', {
     resolve: async ({ ctx }) => {
       return await ctx.prisma.gameInvite.findMany({
         where: {
@@ -90,7 +90,7 @@ export const inviteRouter = createProtectedRouter()
       });
     },
   })
-  .mutation("declineInvite", {
+  .mutation('declineInvite', {
     input: z.object({
       inviteId: z.string(),
     }),
@@ -103,7 +103,7 @@ export const inviteRouter = createProtectedRouter()
       });
     },
   })
-  .mutation("sendInvite", {
+  .mutation('sendInvite', {
     input: z.object({
       otherPlayerId: z.string(),
     }),
@@ -124,12 +124,12 @@ export const inviteRouter = createProtectedRouter()
         },
       });
 
-      ctx.ee.emit(Events.SEND_INVITE, invite);
+      ctx.redis.emit(Events.SEND_INVITE, invite);
 
       return invite;
     },
   })
-  .mutation("acceptInvite", {
+  .mutation('acceptInvite', {
     input: z.object({
       inviteId: z.string(),
     }),
@@ -139,7 +139,7 @@ export const inviteRouter = createProtectedRouter()
         where: { id: input.inviteId },
       });
       if (!invite) {
-        throw new Error("Invite not found");
+        throw new Error('Invite not found');
       }
       // delete invite
       await ctx.prisma.gameInvite.delete({ where: { id: input.inviteId } });
@@ -167,13 +167,13 @@ export const inviteRouter = createProtectedRouter()
 
       const gameState = createGame(
         game.id,
-        game.players.map((p) => p.id)
+        game.players.map((p) => p.id),
       );
 
-      ctx.cache.set(game.id, gameState);
+      ctx.redis.set(game.id, gameState.serialize());
 
       // notify other player that game is starting
-      ctx.ee.emit(Events.ACCEPT_INVITE, {
+      ctx.redis.emit(Events.ACCEPT_INVITE, {
         id: game.id,
         players: [{ id: invite.fromUserId }, { id: invite.toUserId }],
       });

@@ -48,6 +48,9 @@ ENV NEXT_PUBLIC_WS_URL=$NEXT_PUBLIC_WS_URL
 
 RUN npm run build
 
+# appliy migrations
+RUN npx prisma migrate deploy
+
 # Production image, copy all the files and run next
 FROM node:16-alpine AS runner
 WORKDIR /app

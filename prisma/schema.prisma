@@ -91,6 +91,7 @@ model GameResult {
   winnerId    String
   winner      User     @relation(name: "wins", fields: [winnerId], references: [id])
   winnerScore Int?
+  winnerRating Int
   loserId     String
   loser       User     @relation(name: "losses", fields: [loserId], references: [id])
   loserScore  Int?

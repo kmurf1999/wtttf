@@ -1,10 +1,10 @@
-import { PrismaClient } from "@prisma/client";
-import * as trpc from "@trpc/server";
-import superjson from "superjson";
-import z from "zod";
-import { calcElo } from "../../../utils/rating";
-import { GameState } from "../../gameState";
-import { createProtectedRouter } from "../context";
+import { PrismaClient } from '@prisma/client';
+import * as trpc from '@trpc/server';
+import superjson from 'superjson';
+import z from 'zod';
+import { calcElo } from '../../../utils/rating';
+import { GameState, parseGame } from '../../gameState';
+import { createProtectedRouter } from '../context';
 
 async function insertGameResult(
   prisma: PrismaClient,
@@ -20,7 +20,7 @@ async function insertGameResult(
     loserId: string;
     winnerScore?: number;
     loserScore?: number;
-  }
+  },
 ) {
   const winner = await prisma.user.findUnique({
     where: {
@@ -33,7 +33,7 @@ async function insertGameResult(
     },
   });
   if (!winner || !loser) {
-    throw new Error("User not found");
+    throw new Error('User not found');
   }
 
   const newRatings = calcElo(winner.rating, loser.rating, 30, 0);
@@ -59,9 +59,11 @@ async function insertGameResult(
   const gameResult = prisma.gameResult.create({
     data: {
       winnerId,
-      loserId,
       winnerScore,
+      winnerRating,
+      loserId,
       loserScore,
+      loserRating,
     },
   });
   const gameUpdate = prisma.game.delete({
@@ -81,57 +83,57 @@ async function insertGameResult(
 
 export const playRouter = createProtectedRouter()
   .transformer(superjson)
-  .subscription("subscribeToGame", {
+  .subscription('subscribeToGame', {
     input: z.object({
       gameId: z.string(),
     }),
     resolve: async ({ ctx, input }) => {
-      const game = ctx.cache.get(input.gameId) as GameState | undefined;
+      const game = parseGame(await ctx.redis.get(input.gameId));
       if (!game) {
-        throw new Error("Game not found");
+        throw new Error('Game not found');
       }
       if (
         !game.data.players.find((player) => player.id === ctx.session.user.id)
       ) {
-        throw new Error("Not a player in this game");
+        throw new Error('Not a player in this game');
       }
-      return new trpc.Subscription<GameState>((emit) => {
+      return new trpc.Subscription<GameState>(async (emit) => {
         function onMessage(state: GameState) {
           if (state.data.id === input.gameId) {
             emit.data(state);
           }
         }
 
-        ctx.ee.on("gameEvent", onMessage);
+        ctx.redis.on('gameEvent', onMessage);
         // send connect event
-        const game = ctx.cache.get(input.gameId) as GameState | undefined;
+        const game = parseGame(await ctx.redis.get(input.gameId));
         if (!game) {
-          throw new Error("Game not found");
+          throw new Error('Game not found');
         }
         const nextState = game.connect(ctx.session.user.id);
         // update cache
-        ctx.cache.set(input.gameId, nextState);
+        ctx.redis.set(input.gameId, nextState.serialize());
         // emit event
-        ctx.ee.emit("gameEvent", nextState);
+        ctx.redis.emit('gameEvent', nextState);
 
-        return () => {
+        return async () => {
           // disconnect event
-          const game = ctx.cache.get(input.gameId) as GameState | undefined;
+          const game = parseGame(await ctx.redis.get(input.gameId));
           if (!game) {
-            throw new Error("Game not found");
+            throw new Error('Game not found');
           }
           const nextState = game.disconnect(ctx.session.user.id);
           // update cache
-          ctx.cache.set(input.gameId, nextState);
+          ctx.redis.set(input.gameId, nextState.serialize());
           // emit event
-          ctx.ee.emit("gameEvent", nextState);
+          ctx.redis.emit('gameEvent', nextState);
 
-          ctx.ee.off("gameEvent", onMessage);
+          ctx.redis.off('gameEvent', onMessage);
         };
       });
     },
   })
-  .mutation("postGameResult", {
+  .mutation('postGameResult', {
     input: z.object({
       gameId: z.string(),
       winnerId: z.string(),
@@ -141,50 +143,50 @@ export const playRouter = createProtectedRouter()
     }),
     resolve: async ({ ctx, input }) => {
       // get game from cache
-      const game = ctx.cache.get(input.gameId) as GameState | undefined;
+      const game = parseGame(await ctx.redis.get(input.gameId));
       if (!game) {
-        throw new Error("Game not found");
+        throw new Error('Game not found');
       }
       const nextState = game.postResult({
         submittedBy: ctx.session.user.id,
         ...input,
       });
       // update cache
-      ctx.cache.set(input.gameId, nextState);
+      ctx.redis.set(input.gameId, nextState.serialize());
       // emit event
-      ctx.ee.emit("gameEvent", nextState);
+      ctx.redis.emit('gameEvent', nextState);
     },
   })
-  .mutation("rejectGameResult", {
+  .mutation('rejectGameResult', {
     input: z.object({
       gameId: z.string(),
     }),
     resolve: async ({ ctx, input }) => {
       // get game from cache
-      const game = ctx.cache.get(input.gameId) as GameState | undefined;
+      const game = parseGame(await ctx.redis.get(input.gameId));
       if (!game) {
-        throw new Error("Game not found");
+        throw new Error('Game not found');
       }
       const nextState = game.rejectResult();
       // update cache
-      ctx.cache.set(input.gameId, nextState);
+      ctx.redis.set(input.gameId, nextState.serialize());
       // emit event
-      ctx.ee.emit("gameEvent", nextState);
+      ctx.redis.emit('gameEvent', nextState);
     },
   })
-  .mutation("acceptGameResult", {
+  .mutation('acceptGameResult', {
     input: z.object({
       gameId: z.string(),
     }),
     resolve: async ({ ctx, input }) => {
-      const game = ctx.cache.get(input.gameId) as GameState | undefined;
+      const game = parseGame(await ctx.redis.get(input.gameId));
       if (!game) {
-        throw new Error("Game not found");
+        throw new Error('Game not found');
       }
 
       const nextState = game.acceptResult(ctx.session.user.id);
       if (!nextState.data.result) {
-        throw new Error("Internal error");
+        throw new Error('Internal error');
       }
 
       const gameResult = await insertGameResult(ctx.prisma, {
@@ -196,26 +198,26 @@ export const playRouter = createProtectedRouter()
       nextState.data.resultId = gameResult.id;
 
       // update cache TODO maybe delete cache entry
-      ctx.cache.set(input.gameId, nextState);
+      ctx.redis.set(input.gameId, nextState.serialize());
       // emit event
-      ctx.ee.emit("gameEvent", nextState);
+      ctx.redis.emit('gameEvent', nextState);
 
       return gameResult;
     },
   })
-  .mutation("resignGame", {
+  .mutation('resignGame', {
     input: z.object({
       gameId: z.string(),
     }),
     resolve: async ({ ctx, input }) => {
-      const game = ctx.cache.get(input.gameId) as GameState | undefined;
+      const game = parseGame(await ctx.redis.get(input.gameId));
       if (!game) {
-        throw new Error("Game not found");
+        throw new Error('Game not found');
       }
 
       const nextState = game.resign(ctx.session.user.id);
       if (!nextState.data.result) {
-        throw new Error("Internal error");
+        throw new Error('Internal error');
       }
 
       const gameResult = await insertGameResult(ctx.prisma, {
@@ -227,14 +229,14 @@ export const playRouter = createProtectedRouter()
       nextState.data.resultId = gameResult.id;
 
       // update cache TODO maybe delete cache
-      ctx.cache.set(input.gameId, nextState);
+      ctx.redis.set(input.gameId, nextState.serialize());
       // emit
-      ctx.ee.emit("gameEvent", nextState);
+      ctx.redis.emit('gameEvent', nextState);
 
       return gameResult;
     },
   })
-  .query("getGameById", {
+  .query('getGameById', {
     input: z.object({
       gameId: z.string(),
     }),
@@ -256,7 +258,7 @@ export const playRouter = createProtectedRouter()
       });
 
       if (!game) {
-        throw new Error("Game not found");
+        throw new Error('Game not found');
       }
 
       // TODO

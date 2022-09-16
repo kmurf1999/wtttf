@@ -8,7 +8,7 @@ export type GameResult = {
 
 export type GameStateData = {
   id: string;
-  status: "playing" | "finished";
+  status: 'playing' | 'finished';
   players: {
     id: string;
     connected: boolean;
@@ -20,9 +20,20 @@ export type GameStateData = {
 export function createGame(id: string, players: string[]): GameState {
   return new GameState({
     id,
-    status: "playing",
+    status: 'playing',
     players: players.map((id) => ({ id, connected: false })),
   });
+}
+
+export function parseGame(
+  data: string | null | undefined,
+): GameState | undefined {
+  if (!data) {
+    return undefined;
+  }
+  try {
+    return new GameState(JSON.parse(data));
+  } catch (err) {}
 }
 
 export class GameState {
@@ -30,10 +41,7 @@ export class GameState {
   constructor(data: GameStateData) {
     this.data = data;
   }
-  parse(data: string) {
-    return new GameState(JSON.parse(data));
-  }
-  stringify() {
+  serialize() {
     return JSON.stringify(this.data);
   }
   // actions
@@ -41,7 +49,7 @@ export class GameState {
     const newGame = new GameState({ ...this.data });
     const player = newGame.data.players.find((p) => p.id === playerId);
     if (!player) {
-      throw new Error("Player not in game");
+      throw new Error('Player not in game');
     }
     player.connected = true;
     return newGame;
@@ -50,7 +58,7 @@ export class GameState {
     const nextState = new GameState({ ...this.data });
     const player = nextState.data.players.find((p) => p.id === playerId);
     if (!player) {
-      throw new Error("Player not in game");
+      throw new Error('Player not in game');
     }
     player.connected = false;
     return nextState;
@@ -58,7 +66,7 @@ export class GameState {
   postResult(result: GameResult): GameState {
     const nextState = new GameState({ ...this.data });
     if (nextState.data.result) {
-      throw new Error("Result already posted");
+      throw new Error('Result already posted');
     }
     nextState.data.result = result;
     return nextState;
@@ -66,18 +74,18 @@ export class GameState {
   acceptResult(playerId: string): GameState {
     const nextState = new GameState({ ...this.data });
     if (!nextState.data.result) {
-      throw new Error("No result to accept");
+      throw new Error('No result to accept');
     }
     if (playerId === nextState.data.result.submittedBy) {
-      throw new Error("Cannot accept own result");
+      throw new Error('Cannot accept own result');
     }
-    nextState.data.status = "finished";
+    nextState.data.status = 'finished';
     return nextState;
   }
   rejectResult(): GameState {
     const nextState = new GameState({ ...this.data });
     if (!nextState.data.result) {
-      throw new Error("No result to reject");
+      throw new Error('No result to reject');
     }
     nextState.data.result = undefined;
     return nextState;
@@ -95,7 +103,7 @@ export class GameState {
       loserId: playerId,
     };
     nextState.data.result = result;
-    nextState.data.status = "finished";
+    nextState.data.status = 'finished';
     return nextState;
   }
 }
