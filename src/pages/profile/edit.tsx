@@ -1,10 +1,10 @@
 import type { NextPage } from 'next';
 import { useSession } from 'next-auth/react';
 import { useForm } from 'react-hook-form';
-import Layout from '../components/Layout';
+import Layout from '../../components/Layout';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { trpc } from '../utils/trpc';
+import { trpc } from '../../utils/trpc';
 import Link from 'next/link';
 
 const schema = z.object({
