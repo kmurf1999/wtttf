@@ -19,13 +19,15 @@ const Home: NextPage = () => {
 
         <div className="flex flex-row gap-2">
           <Link href="play/create">
-            <a className="btn btn-primary">
+            <a className="btn btn-primary bg-sky-500 border-none">
               <PlusIcon className="w-4 h-4 mr-2 text-white" />
               create game
             </a>
           </Link>
           <Link href="play/join">
-            <a className="btn btn-outline">join game</a>
+            <a className="btn bg-gray-100 border-none text-gray-600">
+              join game
+            </a>
           </Link>
         </div>
       </div>

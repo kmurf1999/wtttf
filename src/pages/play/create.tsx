@@ -47,13 +47,13 @@ const Create: NextPage = () => {
             {players.data?.map((player) => (
               <li key={player.id} className="relative">
                 {player.id === selectedUserId && (
-                  <div className="absolute w-1 h-full bg-purple-500 l-0 t-0" />
+                  <div className="absolute w-1 h-full bg-blue-500 l-0 t-0" />
                 )}
                 <button
                   className={[
                     'w-full p-4 flex flex-row gap-2 ',
                     selectedUserId === player.id
-                      ? 'bg-purple-100'
+                      ? 'bg-blue-100'
                       : 'hover:bg-gray-100',
                   ].join(' ')}
                   onClick={() => setSelectedUserId(player.id)}
@@ -84,7 +84,7 @@ const Create: NextPage = () => {
               onClick={() =>
                 createGame.mutate({ otherPlayerId: selectedUserId! })
               }
-              className="btn btn-primary"
+              className="btn btn-primary bg-blue-500 border-none"
               disabled={!selectedUserId}
             >
               Send

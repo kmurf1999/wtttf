@@ -33,15 +33,17 @@ const Profile: NextPage = () => {
           <Image layout="fill" src={user.data.image || ''} alt="Avatar" />
         </div>
         <div>
-          <h2 className="mt-2 text-2xl text-gray-900 font-semibold">
+          <h2 className="text-center mt-2 text-2xl text-gray-900 font-semibold">
             {user.data.name}
           </h2>
-          <p className="text-sm text-gray-400">{user.data.email}</p>
+          <p className="text-center text-sm text-gray-400">{user.data.email}</p>
         </div>
         <div className="my-4 flex flex-row gap-2 items-center">
-          <button className="btn btn-sm btn-primary">Edit profile</button>
-          <button className="btn btn-sm">
-            <ArrowLeftOnRectangleIcon className="w-4 h-4" />
+          <button className="btn btn-sm bg-blue-500 border-none text-white">
+            Edit profile
+          </button>
+          <button className="btn btn-sm bg-gray-100 border-none text-gray-500">
+            <ArrowLeftOnRectangleIcon className="w-5 h-5" />
           </button>
         </div>
         <div className="w-full grid grid-cols-3 px-2 py-4 border-t border-b">
@@ -67,7 +69,7 @@ const Profile: NextPage = () => {
             onClick={() => setSelectedTab('games')}
             className={[
               'rounded-xl btn btn-ghost btn-primary',
-              selectedTab === 'games' && 'btn-active text-purple-600',
+              selectedTab === 'games' && 'bg-gray-100 text-blue-500',
             ].join(' ')}
           >
             <ListBulletIcon className="w-5 h-5 mr-2" />
@@ -77,7 +79,7 @@ const Profile: NextPage = () => {
             onClick={() => setSelectedTab('rating')}
             className={[
               'rounded-xl btn btn-ghost btn-primary',
-              selectedTab === 'rating' && 'btn-active text-purple-600',
+              selectedTab === 'rating' && 'bg-gray-100 text-blue-500',
             ].join(' ')}
           >
             <ChartBarIcon className="w-5 h-5 mr-2" />

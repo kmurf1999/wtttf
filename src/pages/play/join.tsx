@@ -58,13 +58,13 @@ const Join: NextPage = () => {
             {invites.data?.map((invite) => (
               <li key={invite.id} className="relative">
                 {invite.id === selectedInviteId && (
-                  <div className="absolute w-1 h-full bg-purple-500 l-0 t-0" />
+                  <div className="absolute w-1 h-full bg-blue-500 l-0 t-0" />
                 )}
                 <button
                   className={[
                     'w-full p-4 flex flex-row items-center',
                     selectedInviteId === invite.id
-                      ? 'bg-purple-100'
+                      ? 'bg-blue-100'
                       : 'hover:bg-gray-100',
                   ].join(' ')}
                   onClick={() => setSelectedInviteId(invite.id)}
@@ -107,7 +107,7 @@ const Join: NextPage = () => {
               onClick={() =>
                 acceptInvite.mutate({ inviteId: selectedInviteId! })
               }
-              className="btn btn-primary"
+              className="btn btn-primary bg-blue-500 border-none"
               disabled={!selectedInviteId}
             >
               Accept

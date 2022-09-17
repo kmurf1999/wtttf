@@ -14,7 +14,7 @@ export default function Header() {
       <div className="grow"></div>
       {user.data && (
         <Link href="/profile">
-          <a className="flex flex-row items-center gap-2 pl-3 pr-2 py-2 rounded-full text-gray-600 hover:bg-gray-200 hover:text-purple-600 transition-colors">
+          <a className="flex flex-row items-center gap-2 pl-3 pr-2 py-2 rounded-full text-gray-600 hover:bg-gray-200 hover:text-blue-500 transition-colors">
             <div className="text-start">{user.data.name}</div>
             <div className="avatar">
               <div className="w-8 mask mask-circle">
