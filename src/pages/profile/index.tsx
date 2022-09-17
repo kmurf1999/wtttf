@@ -24,7 +24,7 @@ const Profile: NextPage = () => {
   return (
     <Layout>
       <Link href="/">
-        <a className="mt-2 w-fit btn btn-sm btn-ghost text-gray-400 ">
+        <a className="self-start mt-2 w-fit btn btn-sm btn-ghost text-gray-400 ">
           <ArrowLeftIcon className="w-4 h-4 mr-2" />
           Back to home
         </a>

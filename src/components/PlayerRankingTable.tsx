@@ -30,15 +30,22 @@ export default function PlayerRankingTable() {
           <tbody>
             {rankings.data?.map((player) => (
               <tr key={player.id} className="bg-white border-b">
-                <th
+                <td
                   scope="row"
-                  className="py-4 px-2 font-medium text-gray-900 whitespace-nowrap"
+                  className="py-4 px-2 font-medium text-gray-900 whitespace-nowrap flex flex-row gap-2"
                 >
-                  <div>{player.name}</div>
-                  <div className="text-sm text-gray-400 font-normal">
-                    {player.email}
+                  <div className="avatar">
+                    <div className="sm:w-10 mask mask-squircle">
+                      <Image layout="fill" src={player.image!} alt="avatar" />
+                    </div>
                   </div>
-                </th>
+                  <div>
+                    <div>{player.name}</div>
+                    <div className="text-sm overflow-hidden text-ellipsis max-w-[160px] text-gray-400 font-normal">
+                      {player.email}
+                    </div>
+                  </div>
+                </td>
                 <td className="py-4 px-2 font-mono text-base">
                   {Math.round(player.rating)}
                 </td>

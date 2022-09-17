@@ -1,5 +1,6 @@
 import { PlusIcon } from '@heroicons/react/24/solid';
 import type { GetServerSidePropsContext, NextPage } from 'next';
+import Image from 'next/image';
 import Link from 'next/link';
 import Layout from '../components/Layout';
 import PlayerRankingTable from '../components/PlayerRankingTable';
@@ -9,11 +10,11 @@ import { getServerAuthSession } from '../server/common/get-server-auth-session';
 const Home: NextPage = () => {
   return (
     <Layout>
-      <div className="w-full sm:mx-auto sm:max-w-md p-6 flex flex-col gap-3 ">
-        <h5 className="text-2xl font-bold tracking-tight text-gray-900 ">
+      <div className="relative w-full sm:mx-auto sm:max-w-md px-3 py-6 flex flex-col">
+        <h5 className="text-2xl font-bold tracking-tight text-black">
           Play now
         </h5>
-        <p className="mb-2 font-normal text-gray-400 ">
+        <p className="mb-8 mt-3 font-normal text-gray-400">
           Create a game to invite a player or join a game to accept an
           invitation.
         </p>
@@ -26,7 +27,7 @@ const Home: NextPage = () => {
             </a>
           </Link>
           <Link href="play/join">
-            <a className="btn bg-gray-100 border-none text-gray-600">
+            <a className="btn btn-outline bg-none border-blue-500 text-blue-500">
               join game
             </a>
           </Link>
