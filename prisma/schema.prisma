@@ -57,6 +57,7 @@ model User {
   image         String?
   accounts      Account[]
   sessions      Session[]
+  createdAt     DateTime @default(now())
 
   rating Float @default(1000)
 

@@ -33,7 +33,7 @@ const Join: NextPage = () => {
   const [selectedInviteId, setSelectedInviteId] = useState<string | null>(null);
   return (
     <Layout>
-      <div className="w-full sm:max-w-md flex flex-col gap-2">
+      <div className="w-full sm:mx-auto sm:max-w-md flex flex-col gap-2">
         <Link href="/">
           <a className=" mt-2 w-fit btn btn-sm btn-ghost text-gray-400 ">
             <ArrowLeftIcon className="w-4 h-4 mr-2" />

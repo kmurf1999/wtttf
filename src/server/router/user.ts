@@ -16,6 +16,13 @@ export const userRouter = createProtectedRouter()
           name: true,
           image: true,
           rating: true,
+          createdAt: true,
+          _count: {
+            select: {
+              wins: true,
+              losses: true,
+            },
+          },
         },
       });
     },

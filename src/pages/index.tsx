@@ -2,13 +2,13 @@ import { PlusIcon } from '@heroicons/react/24/solid';
 import type { GetServerSidePropsContext, NextPage } from 'next';
 import Link from 'next/link';
 import Layout from '../components/Layout';
-import PlayerRankingTable from '../components/PlayerRankingTable';
+// import PlayerRankingTable from '../components/PlayerRankingTable';
 import { getServerAuthSession } from '../server/common/get-server-auth-session';
 
 const Home: NextPage = () => {
   return (
     <Layout>
-      <div className="w-full sm:max-w-md p-6 flex flex-col gap-3 ">
+      <div className="w-full sm:mx-auto sm:max-w-md p-6 flex flex-col gap-3 ">
         <h5 className="text-2xl font-bold tracking-tight text-gray-900 ">
           Play now
         </h5>
@@ -29,7 +29,6 @@ const Home: NextPage = () => {
           </Link>
         </div>
       </div>
-      <PlayerRankingTable />
     </Layout>
   );
 };
