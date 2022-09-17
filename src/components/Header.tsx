@@ -4,7 +4,6 @@ import { trpc } from '../utils/trpc';
 
 export default function Header() {
   const user = trpc.useQuery(['user.getMe']);
-  console.log(user);
 
   return (
     <nav className="w-full h-16 min-h-16 bg-white border-b flex flex-row items-center px-4">

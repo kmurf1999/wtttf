@@ -16,6 +16,24 @@ export const rankingRouter = createProtectedRouter()
         orderBy: {
           rating: 'desc',
         },
+        where: {
+          OR: [
+            {
+              wins: {
+                some: {
+                  id: { not: undefined },
+                },
+              },
+            },
+            {
+              losses: {
+                some: {
+                  id: { not: undefined },
+                },
+              },
+            },
+          ],
+        },
         select: {
           name: true,
           email: true,
