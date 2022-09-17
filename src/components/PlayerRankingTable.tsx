@@ -1,46 +1,55 @@
+import { ChevronUpDownIcon } from '@heroicons/react/24/solid';
 import Image from 'next/image';
 import { trpc } from '../utils/trpc';
 export default function PlayerRankingTable() {
-  const rankings = trpc.useQuery(['game.ranking.get', { skip: 0, take: 10 }]);
+  const rankings = trpc.useQuery(['game.ranking.get', { skip: 0, take: 30 }]);
   return (
-    <div className="relative w-full sm:max-w-md bg-white p-2">
-      <h5 className="ml-4 mb-4 text-2xl font-bold tracking-tight text-gray-900 ">
-        Rankings
-      </h5>
-      <table className="w-full table">
-        <thead className="text-white uppercase text-sm">
-          <tr className="text-left">
-            <th className="bg-gray-900">Player</th>
-            <th className="bg-gray-900">Rating</th>
-            <th className="bg-gray-900">Record</th>
-          </tr>
-        </thead>
-        <tbody className="bg-white">
-          {rankings.data?.map((user) => (
-            <tr key={user.id} className="p-4">
-              <td>
-                <div className="flex flex-row items-center gap-2">
-                  <div className="avatar">
-                    <div className="w-10 mask mask-squircle">
-                      <Image layout="fill" src={user.image!} alt={user.name!} />
-                    </div>
-                  </div>
-                  <div>
-                    <div className="text font-medium text-gray-900">
-                      {user.name}
-                    </div>
-                    <div className="text-sm text-gray-500">{user.email}</div>
-                  </div>
+    <div className="relative w-full sm:mx-auto sm:max-w-md ">
+      <h3 className="p-2 font-medium text-white bg-gray-900">Rankings</h3>
+      <div className="relative overflow-x-auto border-t">
+        <table className="w-full text-sm text-left text-gray-500 ">
+          <thead className="text-xs text-gray-700 uppercase bg-gray-50 ">
+            <tr>
+              <th scope="col" className="py-3 px-2">
+                Player
+              </th>
+              <th scope="col" className="py-3 px-2">
+                <div className="flex items-center">
+                  Rating
+                  <ChevronUpDownIcon className="ml-1 w-4 h-4" />
                 </div>
-              </td>
-              <td className="font-mono">{Math.round(user.rating)}</td>
-              <td className="font-mono">
-                {user._count.wins} - {user._count.losses}
-              </td>
+              </th>
+              <th scope="col" className="py-3 px-2">
+                <div className="flex items-center">
+                  Record
+                  <ChevronUpDownIcon className="ml-1 w-4 h-4" />
+                </div>
+              </th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {rankings.data?.map((player) => (
+              <tr key={player.id} className="bg-white border-b">
+                <th
+                  scope="row"
+                  className="py-4 px-2 font-medium text-gray-900 whitespace-nowrap"
+                >
+                  <div>{player.name}</div>
+                  <div className="text-sm text-gray-400 font-normal">
+                    {player.email}
+                  </div>
+                </th>
+                <td className="py-4 px-2 font-mono text-base">
+                  {Math.round(player.rating)}
+                </td>
+                <td className="py-4 px-2 font-mono text-base">
+                  {player._count.wins} - {player._count.losses}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }

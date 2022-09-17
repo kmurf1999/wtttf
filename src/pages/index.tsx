@@ -2,6 +2,7 @@ import { PlusIcon } from '@heroicons/react/24/solid';
 import type { GetServerSidePropsContext, NextPage } from 'next';
 import Link from 'next/link';
 import Layout from '../components/Layout';
+import PlayerRankingTable from '../components/PlayerRankingTable';
 // import PlayerRankingTable from '../components/PlayerRankingTable';
 import { getServerAuthSession } from '../server/common/get-server-auth-session';
 
@@ -31,6 +32,7 @@ const Home: NextPage = () => {
           </Link>
         </div>
       </div>
+      <PlayerRankingTable />
     </Layout>
   );
 };
