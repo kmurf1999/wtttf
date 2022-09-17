@@ -5,6 +5,7 @@ import {
   ListBulletIcon,
 } from '@heroicons/react/24/solid';
 import type { GetServerSidePropsContext, NextPage } from 'next';
+import { signOut } from 'next-auth/react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useState } from 'react';
@@ -39,10 +40,15 @@ const Profile: NextPage = () => {
           <p className="text-center text-sm text-gray-400">{user.data.email}</p>
         </div>
         <div className="my-4 flex flex-row gap-2 items-center">
-          <button className="btn btn-sm bg-blue-500 border-none text-white">
-            Edit profile
-          </button>
-          <button className="btn btn-sm bg-gray-100 border-none text-gray-500">
+          <Link href="/profile/edit">
+            <a className="btn btn-sm bg-blue-500 border-none text-white">
+              Edit profile
+            </a>
+          </Link>
+          <button
+            className="btn btn-sm bg-gray-100 border-none text-gray-500"
+            onClick={() => signOut()}
+          >
             <ArrowLeftOnRectangleIcon className="w-5 h-5" />
           </button>
         </div>
