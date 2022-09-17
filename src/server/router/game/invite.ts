@@ -129,6 +129,19 @@ export const inviteRouter = createProtectedRouter()
       return invite;
     },
   })
+  .mutation('cancelInvite', {
+    input: z.object({
+      inviteId: z.string(),
+    }),
+    resolve: async ({ ctx, input }) => {
+      return await ctx.prisma.gameInvite.delete({
+        where: {
+          id: input.inviteId,
+          // TODO make sure fromUserId is context.sewssionuser.id
+        },
+      });
+    },
+  })
   .mutation('acceptInvite', {
     input: z.object({
       inviteId: z.string(),

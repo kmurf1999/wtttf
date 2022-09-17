@@ -45,7 +45,7 @@ const GameResult = ({ id }: { id: string }) => {
   const { winner, loser, winnerScore, loserScore, date } = gameResult.data;
 
   return (
-    <div className="w-full sm:max-w-md flex flex-col gap-2">
+    <div className="w-full sm:mx-auto sm:max-w-md flex flex-col gap-2">
       <Link href="/">
         <a className=" mt-2 w-fit btn btn-sm btn-ghost text-gray-400 ">
           <ArrowLeftIcon className="w-4 h-4 mr-2" />

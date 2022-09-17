@@ -4,6 +4,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useState } from 'react';
+import WaitingModal from '../../components/create/WaitingModal';
 import Layout from '../../components/Layout';
 import SearchInput from '../../components/SearchInput';
 import { trpc } from '../../utils/trpc';
@@ -11,10 +12,21 @@ import { trpc } from '../../utils/trpc';
 const Create: NextPage = () => {
   const [name, setName] = useState('');
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
+  const [inviteId, setInviteId] = useState<string | null>(null);
   const router = useRouter();
 
   const players = trpc.useQuery(['auth.getUsersByName', { name }]);
-  const createGame = trpc.useMutation(['game.invite.sendInvite']);
+  const createGame = trpc.useMutation(['game.invite.sendInvite'], {
+    onSuccess: (data) => {
+      setSelectedUserId(null);
+      setInviteId(data.id);
+    },
+  });
+  const cancelInvite = trpc.useMutation(['game.invite.cancelInvite'], {
+    onSuccess: () => {
+      setInviteId(null);
+    },
+  });
 
   trpc.useSubscription(['game.invite.streamAcceptedInvites'], {
     onNext: (data) => {
@@ -22,8 +34,17 @@ const Create: NextPage = () => {
     },
   });
 
+  const showModal = inviteId !== null;
+
   return (
     <Layout>
+      {showModal && (
+        <WaitingModal
+          close={() => {
+            cancelInvite.mutate({ inviteId });
+          }}
+        />
+      )}
       <div className="w-full sm:mx-auto sm:max-w-md flex flex-col gap-2">
         <Link href="/">
           <a className=" mt-2 w-fit btn btn-sm btn-ghost text-gray-400 ">

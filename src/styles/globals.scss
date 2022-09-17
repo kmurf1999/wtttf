@@ -12,3 +12,56 @@ body,
   display: flex;
   flex-direction: column;
 }
+
+.ball-wrap {
+  position: relative;
+  width: 100px;
+  height: 120px;
+}
+
+.ball-ball,
+.ball-shadow {
+  border-radius: 100%;
+  left: 0;
+  margin: 0 auto;
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  // top: 0;
+}
+
+.ball-ball {
+  animation: ball 300ms cubic-bezier(0.165, 0.84, 0.44, 1) infinite alternate;
+  height: 50px;
+  width: 50px;
+  background: linear-gradient(#fef, #d6cdc1);
+  bottom: 13px;
+}
+
+.ball-shadow {
+  animation: shadow 300ms cubic-bezier(0.165, 0.84, 0.44, 1) infinite alternate;
+  background: #000;
+  bottom: 0;
+  height: 25px;
+  width: 75px;
+}
+
+@keyframes ball {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(-50px);
+  }
+}
+
+@keyframes shadow {
+  0% {
+    opacity: 0.2;
+    transform: scale(0.75);
+  }
+  100% {
+    opacity: 0.05;
+    transform: scale(1);
+  }
+}
