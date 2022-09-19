@@ -2,6 +2,8 @@
 
 The official match-making system for **Willow-Tree Table Tennis Federation**
 
+[Official Site](#https://pong.kylemerfy.com)
+
 ## Features
 
 - :lock: Google and Github Auth
@@ -32,7 +34,7 @@ For more information on trpc websockets with Next.js [Example application](#http
 
 Copy environment variables to the correct location
 
-```
+```bash
 cp .env.sample .env
 ```
 
@@ -42,13 +44,13 @@ To log into the application you'll need to get valid OAuth2 client ID and secret
 
 First, start the database
 
-```
+```bash
 docker compose up db
 ```
 
-Next, apply all migrations and run the seed command. This may take longer than expected to execute.
+Next, in a seperate terminal window apply all migrations and run the seed command. This may take longer than expected to execute.
 
-```
+```bash
 npx prisma migrate reset
 ```
 
@@ -58,8 +60,30 @@ npx prisma migrate reset
 
 Now you should be able to run the project using docker compose
 
-```
+```bash
 docker compose up
 ```
 
 After the build is complete you should be able to visit the application on `localhost:3000`
+
+## Migrations
+
+After making changes to the database schema, you'll need to create and apply a new migration.
+
+First, start the database
+
+```bash
+docker compose up db
+```
+
+Next, in a seperate terminal window create the miration. You'll be prompted to add a name for the migration.
+
+```bash
+npx prisma migrate dev
+```
+
+Finally, you need to rebuild the application and start it
+
+```bash
+docker compose up --build app
+```
