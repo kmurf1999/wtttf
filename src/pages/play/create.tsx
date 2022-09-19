@@ -81,7 +81,7 @@ const Create: NextPage = () => {
                 >
                   <div className="avatar mr-2">
                     <div className="w-12 mask mask-circle">
-                      <Image layout="fill" src={player.image!} alt="Avatar" />
+                      <Image layout="fill" src={player.image} alt="Avatar" />
                     </div>
                   </div>
                   <div className="text-start">

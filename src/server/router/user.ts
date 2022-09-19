@@ -27,6 +27,40 @@ export const userRouter = createProtectedRouter()
       });
     },
   })
+  .query('ratingHistory', {
+    input: z.object({
+      userId: z.string(),
+    }),
+    resolve: async ({ ctx, input }) => {
+      const games = await ctx.prisma.gameResult.findMany({
+        where: {
+          OR: [
+            {
+              winnerId: input.userId,
+            },
+            {
+              loserId: input.userId,
+            },
+          ],
+        },
+        orderBy: {
+          date: 'desc',
+        },
+        select: {
+          winnerId: true,
+          loserId: true,
+          winnerRating: true,
+          loserRating: true,
+          date: true,
+        },
+      });
+
+      return games.map((g) => ({
+        rating: g.winnerId === input.userId ? g.winnerRating : g.loserRating,
+        date: g.date,
+      }));
+    },
+  })
   .mutation('updateUserInfo', {
     input: z.object({
       name: z.string(),

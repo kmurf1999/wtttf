@@ -8,10 +8,14 @@ import type { GetServerSidePropsContext, NextPage } from 'next';
 import { signOut } from 'next-auth/react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useState } from 'react';
+import { lazy, Suspense, useState } from 'react';
 import Layout from '../../components/Layout';
 import { getServerAuthSession } from '../../server/common/get-server-auth-session';
 import { trpc } from '../../utils/trpc';
+
+const RatingHistory = lazy(
+  () => import('../../components/profile/RatingHistory'),
+);
 
 const Profile: NextPage = () => {
   const user = trpc.useQuery(['user.getMe']);
@@ -92,6 +96,11 @@ const Profile: NextPage = () => {
             Rating
           </button>
         </div>
+        {selectedTab === 'rating' && (
+          <Suspense fallback={null}>
+            <RatingHistory userId={user.data.id} />
+          </Suspense>
+        )}
       </div>
     </Layout>
   );
