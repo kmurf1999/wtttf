@@ -55,10 +55,12 @@ export const userRouter = createProtectedRouter()
         },
       });
 
-      return games.map((g) => ({
-        rating: g.winnerId === input.userId ? g.winnerRating : g.loserRating,
-        date: g.date,
-      }));
+      return games
+        .map((g) => ({
+          rating: g.winnerId === input.userId ? g.winnerRating : g.loserRating,
+          date: g.date,
+        }))
+        .filter((g) => g.rating > 0);
     },
   })
   .mutation('updateUserInfo', {
