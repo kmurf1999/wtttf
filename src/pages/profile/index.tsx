@@ -1,11 +1,8 @@
 import { GetServerSidePropsContext, NextPage } from 'next';
-import { Session } from 'next-auth';
 import UserProfile from '../../components/profile/UserProfile';
 import { getServerAuthSession } from '../../server/common/get-server-auth-session';
 
-const ProfilePage: NextPage<{ session: Session }> = ({ session }) => {
-  const userId = session.user?.id;
-
+const ProfilePage: NextPage<{ userId?: string }> = ({ userId }) => {
   if (!userId) {
     return null;
   }
@@ -29,7 +26,7 @@ export async function getServerSideProps(context: {
   }
 
   return {
-    props: { session },
+    props: { userId: session.user?.id },
   };
 }
 
