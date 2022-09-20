@@ -104,9 +104,11 @@ const Create: NextPage = () => {
 
           <div className="mt-4 w-full flex flex-row justify-end">
             <button
-              onClick={() =>
-                createGame.mutate({ otherPlayerId: selectedUserId! })
-              }
+              onClick={() => {
+                if (selectedUserId) {
+                  createGame.mutate({ otherPlayerId: selectedUserId });
+                }
+              }}
               className="btn btn-primary bg-blue-500 border-none"
               disabled={!selectedUserId}
             >
