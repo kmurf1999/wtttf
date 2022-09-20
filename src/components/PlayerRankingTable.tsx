@@ -1,11 +1,12 @@
 import { ChevronUpDownIcon } from '@heroicons/react/24/solid';
 import Image from 'next/image';
+import Link from 'next/link';
 import { trpc } from '../utils/trpc';
 export default function PlayerRankingTable() {
   const rankings = trpc.useQuery(['game.ranking.get', { skip: 0, take: 30 }]);
   return (
     <div className="relative w-full sm:mx-auto sm:max-w-md ">
-      <h3 className="p-2 font-medium text-white bg-gray-900">Rankings</h3>
+      <h3 className="p-2 font-medium text-white bg-gray-900">Leaderboard</h3>
       <div className="relative overflow-x-auto border-t">
         <table className="w-full text-sm text-left text-gray-500 ">
           <thead className="text-xs text-gray-700 uppercase bg-gray-50 ">
@@ -36,11 +37,15 @@ export default function PlayerRankingTable() {
                 >
                   <div className="avatar">
                     <div className="sm:w-10 mask mask-squircle">
-                      <Image layout="fill" src={player.image!} alt="avatar" />
+                      <Image layout="fill" src={player.image} alt="avatar" />
                     </div>
                   </div>
                   <div>
-                    <div>{player.name}</div>
+                    <Link href={`/profile/${player.id}`}>
+                      <a className="text-blue-600 hover:underline">
+                        {player.name}
+                      </a>
+                    </Link>
                     <div className="text-sm overflow-hidden text-ellipsis max-w-[160px] text-gray-400 font-normal">
                       {player.email}
                     </div>

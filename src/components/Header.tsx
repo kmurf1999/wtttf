@@ -1,9 +1,14 @@
+import { useSession } from 'next-auth/react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { trpc } from '../utils/trpc';
 
 export default function Header() {
-  const user = trpc.useQuery(['user.getMe']);
+  const session = useSession();
+  const userId = session?.data?.user?.id;
+  const user = trpc.useQuery(['user.get', { userId: userId! }], {
+    enabled: !!userId,
+  });
 
   return (
     <nav className="w-full h-16 min-h-16 bg-white border-b flex flex-row items-center px-4">

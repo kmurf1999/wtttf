@@ -12,9 +12,9 @@ const RatingHistory = ({ userId }: { userId: string }) => {
 
   const primaryAxis = useMemo(
     (): AxisOptions<RatingDatum> => ({
-      getValue: (datum) => datum.date,
+      getValue: (datum: RatingDatum) => datum.date,
       formatters: {
-        cursor: (date: Date) => new Date().toDateString(),
+        cursor: (date: Date) => (date ? date.toDateString() : ''),
       },
       tickCount: 2,
     }),
@@ -24,7 +24,7 @@ const RatingHistory = ({ userId }: { userId: string }) => {
   const secondaryAxes = useMemo(
     (): AxisOptions<RatingDatum>[] => [
       {
-        getValue: (datum) => datum.rating,
+        getValue: (datum: RatingDatum) => datum.rating,
         showDatumElements: true,
         tickCount: 2,
       },
@@ -32,7 +32,8 @@ const RatingHistory = ({ userId }: { userId: string }) => {
     [],
   );
 
-  if (!history.data) return null;
+  if (!history.data || history.data.length === 0)
+    return <div className="relative w-full h-96 " />;
 
   const data: ChartOptions<RatingDatum>['data'] = [
     {
@@ -42,7 +43,7 @@ const RatingHistory = ({ userId }: { userId: string }) => {
   ];
 
   return (
-    <div className="relative w-full h-96 border-t p-2 pl-0">
+    <div className="relative w-full h-96  ">
       <div className="relative w-full h-full">
         <Chart
           options={{

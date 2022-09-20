@@ -4,12 +4,14 @@ import {
   ArrowRightIcon,
   XMarkIcon,
 } from '@heroicons/react/24/solid';
-import { NextPage } from 'next';
+import { GetServerSidePropsContext, NextPage } from 'next';
+import Cookies from 'cookies';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useState } from 'react';
 import Layout from '../../components/Layout';
+import { getServerAuthSession } from '../../server/common/get-server-auth-session';
 import { trpc } from '../../utils/trpc';
 
 const Join: NextPage = () => {
@@ -119,4 +121,27 @@ const Join: NextPage = () => {
     </Layout>
   );
 };
+
+export async function getServerSideProps(context: {
+  req: GetServerSidePropsContext['req'];
+  res: GetServerSidePropsContext['res'];
+}) {
+  const session = await getServerAuthSession(context);
+
+  if (!session) {
+    const cookies = new Cookies(context.req, context.res);
+    cookies.set('destination', '/play/join');
+    return {
+      redirect: {
+        destination: '/login',
+        permanent: false,
+      },
+    };
+  }
+
+  return {
+    props: { session },
+  };
+}
+
 export default Join;
