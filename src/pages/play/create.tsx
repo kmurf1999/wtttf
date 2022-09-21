@@ -1,5 +1,6 @@
 import { ArrowLeftIcon, ArrowRightIcon } from '@heroicons/react/24/solid';
-import { NextPage } from 'next';
+import Cookies from 'cookies';
+import { GetServerSidePropsContext, NextPage } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
@@ -7,6 +8,7 @@ import { useState } from 'react';
 import WaitingModal from '../../components/create/WaitingModal';
 import Layout from '../../components/Layout';
 import SearchInput from '../../components/SearchInput';
+import { getServerAuthSession } from '../../server/common/get-server-auth-session';
 import { trpc } from '../../utils/trpc';
 
 const Create: NextPage = () => {
@@ -102,9 +104,11 @@ const Create: NextPage = () => {
 
           <div className="mt-4 w-full flex flex-row justify-end">
             <button
-              onClick={() =>
-                createGame.mutate({ otherPlayerId: selectedUserId! })
-              }
+              onClick={() => {
+                if (selectedUserId) {
+                  createGame.mutate({ otherPlayerId: selectedUserId });
+                }
+              }}
               className="btn btn-primary bg-blue-500 border-none"
               disabled={!selectedUserId}
             >
@@ -117,5 +121,27 @@ const Create: NextPage = () => {
     </Layout>
   );
 };
+
+export async function getServerSideProps(context: {
+  req: GetServerSidePropsContext['req'];
+  res: GetServerSidePropsContext['res'];
+}) {
+  const session = await getServerAuthSession(context);
+
+  if (!session) {
+    const cookies = new Cookies(context.req, context.res);
+    cookies.set('destination', '/play/create');
+    return {
+      redirect: {
+        destination: '/login',
+        permanent: false,
+      },
+    };
+  }
+
+  return {
+    props: { session },
+  };
+}
 
 export default Create;

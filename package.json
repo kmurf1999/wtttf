@@ -33,6 +33,7 @@
     "@trpc/next": "^9.27.2",
     "@trpc/react": "^9.27.2",
     "@trpc/server": "^9.27.2",
+    "cookies": "^0.8.0",
     "daisyui": "^2.25.0",
     "ioredis": "^5.2.3",
     "next": "12.2.5",
@@ -51,6 +52,7 @@
     "zustand": "^4.1.1"
   },
   "devDependencies": {
+    "@types/cookies": "^0.7.7",
     "@types/node": "^18.0.0",
     "@types/node-fetch": "^2.6.2",
     "@types/react": "18.0.14",

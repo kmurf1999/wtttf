@@ -1,8 +1,8 @@
 import superjson from 'superjson';
 import z from 'zod';
-import { createProtectedRouter } from '../context';
+import { createRouter } from '../context';
 
-export const rankingRouter = createProtectedRouter()
+export const rankingRouter = createRouter()
   .transformer(superjson)
   .query('get', {
     input: z.object({

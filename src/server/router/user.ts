@@ -1,14 +1,35 @@
-import { createProtectedRouter } from './context';
+import { createProtectedRouter, createRouter } from './context';
 import superjson from 'superjson';
 import { z } from 'zod';
 
-export const userRouter = createProtectedRouter()
+const protectedRouter = createProtectedRouter()
   .transformer(superjson)
-  .query('getMe', {
-    resolve: async ({ ctx }) => {
-      return await ctx.prisma.user.findUnique({
+  .mutation('updateUserInfo', {
+    input: z.object({
+      name: z.string(),
+    }),
+    resolve: async ({ ctx, input }) => {
+      return await ctx.prisma.user.update({
         where: {
           id: ctx.session.user.id,
+        },
+        data: {
+          name: input.name,
+        },
+      });
+    },
+  });
+
+const router = createRouter()
+  .transformer(superjson)
+  .query('get', {
+    input: z.object({
+      userId: z.string(),
+    }),
+    resolve: async ({ ctx, input }) => {
+      return await ctx.prisma.user.findUnique({
+        where: {
+          id: input.userId,
         },
         select: {
           id: true,
@@ -62,19 +83,6 @@ export const userRouter = createProtectedRouter()
         }))
         .filter((g) => g.rating > 0);
     },
-  })
-  .mutation('updateUserInfo', {
-    input: z.object({
-      name: z.string(),
-    }),
-    resolve: async ({ ctx, input }) => {
-      return await ctx.prisma.user.update({
-        where: {
-          id: ctx.session.user.id,
-        },
-        data: {
-          name: input.name,
-        },
-      });
-    },
   });
+
+export const userRouter = createRouter().merge(protectedRouter).merge(router);

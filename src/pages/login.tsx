@@ -1,4 +1,5 @@
 import { GetServerSidePropsContext } from 'next';
+import Cookies from 'cookies';
 import { signIn } from 'next-auth/react';
 import { getServerAuthSession } from '../server/common/get-server-auth-session';
 
@@ -64,9 +65,12 @@ export async function getServerSideProps(context: {
   const session = await getServerAuthSession(context);
 
   if (session) {
+    const cookies = new Cookies(context.req, context.res);
+    const destination = cookies.get('destination') || '/';
+    cookies.set('destination', '/');
     return {
       redirect: {
-        destination: '/',
+        destination,
         permanent: false,
       },
     };

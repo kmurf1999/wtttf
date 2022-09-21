@@ -25,7 +25,7 @@ const Profile: NextPage = () => {
   const context = trpc.useContext();
   const updateUserInfo = trpc.useMutation(['user.updateUserInfo'], {
     onSuccess: () => {
-      context.invalidateQueries(['user.getMe']);
+      context.invalidateQueries(['user.get']);
     },
   });
 
