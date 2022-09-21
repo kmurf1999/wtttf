@@ -73,9 +73,9 @@ async function insertGameResult(
   });
   const [res] = await prisma.$transaction([
     gameResult,
+    gameUpdate,
     winnerUpdate,
     loserUpdate,
-    gameUpdate,
   ]);
 
   return res;
@@ -197,8 +197,7 @@ export const playRouter = createProtectedRouter()
       // TODO this should be in resign function
       nextState.data.resultId = gameResult.id;
 
-      // update cache TODO maybe delete cache entry
-      ctx.redis.set(input.gameId, nextState.serialize());
+      ctx.redis.del(input.gameId);
       // emit event
       ctx.redis.emit('gameEvent', nextState);
 
@@ -228,8 +227,7 @@ export const playRouter = createProtectedRouter()
       // TODO this should be in resign function
       nextState.data.resultId = gameResult.id;
 
-      // update cache TODO maybe delete cache
-      ctx.redis.set(input.gameId, nextState.serialize());
+      ctx.redis.del(input.gameId);
       // emit
       ctx.redis.emit('gameEvent', nextState);
 
