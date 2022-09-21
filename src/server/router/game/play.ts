@@ -2,7 +2,7 @@ import { PrismaClient } from '@prisma/client';
 import * as trpc from '@trpc/server';
 import superjson from 'superjson';
 import z from 'zod';
-import { calcElo } from '../../../utils/rating';
+import { calcRating } from '../../../utils/rating';
 import { GameState, parseGame } from '../../gameState';
 import { createProtectedRouter } from '../context';
 
@@ -36,7 +36,7 @@ async function insertGameResult(
     throw new Error('User not found');
   }
 
-  const newRatings = calcElo(winner.rating, loser.rating, 30, 0);
+  const newRatings = calcRating(winner.rating, loser.rating, 30, true);
   const winnerRating = newRatings[0] as number;
   const loserRating = newRatings[1] as number;
 

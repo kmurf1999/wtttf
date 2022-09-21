@@ -1,21 +1,28 @@
-export function winProbability(ratingA: number, ratingB: number) {
+function winProb(rating1: number, rating2: number) {
   return (
-    (1.0 * 1.0) / (1 + 1.0 * Math.pow(10, (1.0 * (ratingA - ratingB)) / 400))
+    (1.0 * 1.0) / (1 + 1.0 * Math.pow(10, (1.0 * (rating1 - rating2)) / 400))
   );
 }
 
-// 0 = player1 wins, 1 = player2 wins
-// 30 is the example k value
-export function calcElo(
-  ratingA: number,
-  ratingB: number,
-  k: number,
-  winner: 0 | 1
-) {
-  const probA = winProbability(ratingA, ratingB);
-  const probB = winProbability(ratingB, ratingA);
-  if (winner === 0) {
-    return [ratingA + k * (1 - probA), ratingB + k * (0 - probB)];
+// Function to calculate Elo rating
+// K is a constant.
+// d determines whether Player A wins
+// or Player B.
+export function calcRating(Ra: number, Rb: number, K: number, winner: boolean) {
+  const Pb = winProb(Ra, Rb);
+  const Pa = winProb(Rb, Ra);
+
+  let newRa;
+  let newRb;
+
+  // Updating the Elo Ratings
+  if (winner === true) {
+    newRa = Ra + K * (1 - Pa);
+    newRb = Rb + K * (0 - Pb);
+  } else {
+    newRa = Ra + K * (0 - Pa);
+    newRb = Rb + K * (1 - Pb);
   }
-  return [ratingA + k * (0 - probA), ratingB + k * (1 - probB)];
+
+  return [newRa, newRb];
 }
