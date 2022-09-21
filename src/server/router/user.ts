@@ -48,6 +48,53 @@ const router = createRouter()
       });
     },
   })
+  .query('recentGames', {
+    input: z.object({
+      userId: z.string(),
+    }),
+    resolve: async ({ ctx, input }) => {
+      const games = await ctx.prisma.gameResult.findMany({
+        where: {
+          OR: [
+            {
+              winnerId: input.userId,
+            },
+            {
+              loserId: input.userId,
+            },
+          ],
+        },
+        orderBy: {
+          date: 'desc',
+        },
+        select: {
+          winner: {
+            select: {
+              id: true,
+              name: true,
+              image: true,
+              email: true,
+            },
+          },
+          loser: {
+            select: {
+              id: true,
+              name: true,
+              image: true,
+              email: true,
+            },
+          },
+          winnerScore: true,
+          winnerRating: true,
+          loserScore: true,
+          loserRating: true,
+          date: true,
+        },
+      });
+
+      return games;
+    },
+  })
   .query('ratingHistory', {
     input: z.object({
       userId: z.string(),

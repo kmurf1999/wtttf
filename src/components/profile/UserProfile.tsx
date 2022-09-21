@@ -11,6 +11,7 @@ import { useRouter } from 'next/router';
 import { lazy, Suspense, useState } from 'react';
 import Layout from '../../components/Layout';
 import { trpc } from '../../utils/trpc';
+import ChallengePlayer from '../ChallengePlayer';
 
 const RatingHistory = lazy(
   () => import('../../components/profile/RatingHistory'),
@@ -33,7 +34,7 @@ const UserProfile = ({ userId, isMe }: { userId: string; isMe: boolean }) => {
           Back to home
         </a>
       </Link>
-      <div className="w-full sm:max-w-md sm:mx-auto flex flex-col justify-center items-center pt-6">
+      <div className="w-full sm:max-w-md sm:mx-auto flex flex-col justify-center items-center py-6">
         <div className="relative h-20 w-20 rounded-full overflow-hidden ">
           <Image layout="fill" src={user.data.image || ''} alt="Avatar" />
         </div>
@@ -43,21 +44,25 @@ const UserProfile = ({ userId, isMe }: { userId: string; isMe: boolean }) => {
           </h2>
           <p className="text-center text-sm text-gray-400">{user.data.email}</p>
         </div>
-        {isMe && (
-          <div className="mb-4 flex flex-row gap-2 items-center">
-            <Link href="/profile/edit">
-              <a className="btn btn-sm bg-blue-500 border-none text-white">
-                Edit profile
-              </a>
-            </Link>
-            <button
-              className="btn btn-sm bg-gray-100 border-none text-gray-500"
-              onClick={() => signOut().then(() => router.push('/'))}
-            >
-              <ArrowLeftOnRectangleIcon className="w-5 h-5" />
-            </button>
-          </div>
-        )}
+        <div className="mb-6 flex flex-row gap-2 items-center">
+          {isMe ? (
+            <>
+              <Link href="/profile/edit">
+                <a className="btn btn-sm bg-blue-500 border-none text-white">
+                  Edit profile
+                </a>
+              </Link>
+              <button
+                className="btn btn-sm bg-gray-100 border-none text-gray-500"
+                onClick={() => signOut().then(() => router.push('/'))}
+              >
+                <ArrowLeftOnRectangleIcon className="w-5 h-5" />
+              </button>
+            </>
+          ) : (
+            <ChallengePlayer userId={userId} />
+          )}
+        </div>
         <div className="w-full grid grid-cols-3 px-2 py-4 border-t border-b">
           <div className="text-center">
             <h3 className="text-sm text-gray-400">Joined</h3>
