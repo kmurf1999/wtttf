@@ -268,4 +268,21 @@ export const playRouter = createProtectedRouter()
 
       return game;
     },
+  })
+  .query('getCurrentGame', {
+    resolve: async ({ ctx }) => {
+      const game = await ctx.prisma.game.findFirst({
+        where: {
+          players: {
+            some: {
+              id: ctx.session.user.id,
+            },
+          },
+        },
+        select: {
+          id: true,
+        },
+      });
+      return game;
+    },
   });

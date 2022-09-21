@@ -3,7 +3,6 @@ import Cookies from 'cookies';
 import { GetServerSidePropsContext, NextPage } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useRouter } from 'next/router';
 import { useState } from 'react';
 import WaitingModal from '../../components/create/WaitingModal';
 import Layout from '../../components/Layout';
@@ -15,7 +14,6 @@ const Create: NextPage = () => {
   const [name, setName] = useState('');
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
   const [inviteId, setInviteId] = useState<string | null>(null);
-  const router = useRouter();
 
   const players = trpc.useQuery(['auth.getUsersByName', { name }]);
   const createGame = trpc.useMutation(['game.invite.sendInvite'], {
@@ -27,12 +25,6 @@ const Create: NextPage = () => {
   const cancelInvite = trpc.useMutation(['game.invite.cancelInvite'], {
     onSuccess: () => {
       setInviteId(null);
-    },
-  });
-
-  trpc.useSubscription(['game.invite.streamAcceptedInvites'], {
-    onNext: (data) => {
-      router.push(`/play/${data.id}`);
     },
   });
 

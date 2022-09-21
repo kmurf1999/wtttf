@@ -1,13 +1,23 @@
 import Head from 'next/head';
+import { useRouter } from 'next/router';
 import { useNotificationStore } from '../providers/NotifcationProvider';
 import { trpc } from '../utils/trpc';
 import Header from './Header';
 import NotificationCenter from './Notifications/NotificationCenter';
 
 export default function Layout({ children }: { children: React.ReactNode }) {
+  const router = useRouter();
   const pushNotification = useNotificationStore(
     (state) => state.pushNotification,
   );
+
+  const currentGame = trpc.useQuery(['game.play.getCurrentGame'], {
+    enabled: !!router.query.gameId,
+  });
+
+  if (currentGame.data) {
+    router.push(`/play/${currentGame.data.id}`);
+  }
 
   trpc.useSubscription(['game.invite.streamReceivedInvites'], {
     onNext: (data) => {
@@ -15,6 +25,12 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         type: 'GameInvite',
         data,
       });
+    },
+  });
+
+  trpc.useSubscription(['game.invite.streamAcceptedInvites'], {
+    onNext: (data) => {
+      router.push(`/play/${data.id}`);
     },
   });
 
