@@ -22,6 +22,7 @@ const Create: NextPage = () => {
       setInviteId(data.id);
     },
   });
+
   const cancelInvite = trpc.useMutation(['game.invite.cancelInvite'], {
     onSuccess: () => {
       setInviteId(null);
