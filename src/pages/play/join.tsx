@@ -75,7 +75,7 @@ const Join: NextPage = () => {
                     <div className="w-12 mask mask-circle">
                       <Image
                         layout="fill"
-                        src={invite.from.image!}
+                        src={invite.from.image}
                         alt="Avatar"
                       />
                     </div>
@@ -106,9 +106,11 @@ const Join: NextPage = () => {
           </ul>
           <div className="mt-4 w-full flex flex-row justify-end">
             <button
-              onClick={() =>
-                acceptInvite.mutate({ inviteId: selectedInviteId! })
-              }
+              onClick={() => {
+                if (selectedInviteId) {
+                  acceptInvite.mutate({ inviteId: selectedInviteId });
+                }
+              }}
               className="btn btn-primary bg-blue-500 border-none"
               disabled={!selectedInviteId}
             >

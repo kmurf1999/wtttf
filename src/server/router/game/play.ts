@@ -197,7 +197,7 @@ export const playRouter = createProtectedRouter()
       // TODO this should be in resign function
       nextState.data.resultId = gameResult.id;
 
-      ctx.redis.del(input.gameId);
+      ctx.redis.set(input.gameId, nextState.serialize());
       // emit event
       ctx.redis.emit('gameEvent', nextState);
 
@@ -227,7 +227,7 @@ export const playRouter = createProtectedRouter()
       // TODO this should be in resign function
       nextState.data.resultId = gameResult.id;
 
-      ctx.redis.del(input.gameId);
+      ctx.redis.del(input.gameId, nextState.serialize());
       // emit
       ctx.redis.emit('gameEvent', nextState);
 

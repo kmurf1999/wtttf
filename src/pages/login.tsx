@@ -6,12 +6,12 @@ import { getServerAuthSession } from '../server/common/get-server-auth-session';
 export default function Login() {
   return (
     <main className="bg-slate-100 flex items-center justify-center min-h-screen">
-      <div className="p-6 flex flex-col gap-3 bg-white rounded-lg border border-gray-200 shadow-md dark:bg-gray-800 dark:border-gray-700">
+      <div className="p-6 flex flex-col gap-3 bg-white rounded-lg border border-gray-200 shadow-md ">
         <h1 className="text-3xl text-center">Sign In</h1>
         <div className="divider" />
         <button
           type="button"
-          className="text-white bg-[#4285F4] hover:bg-[#4285F4]/90 focus:ring-4 focus:outline-none focus:ring-[#4285F4]/50 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-[#4285F4]/55 mr-2 mb-2"
+          className="text-white bg-[#4285F4] hover:bg-[#4285F4]/90 focus:ring-4 focus:outline-none focus:ring-[#4285F4]/50 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center mr-2 mb-2"
           onClick={() => signIn('google')}
         >
           <svg
@@ -33,7 +33,7 @@ export default function Login() {
         </button>
         <button
           type="button"
-          className="text-white bg-[#24292F] hover:bg-[#24292F]/90 focus:ring-4 focus:outline-none focus:ring-[#24292F]/50 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-gray-500 dark:hover:bg-[#050708]/30 mr-2 mb-2"
+          className="text-white bg-[#24292F] hover:bg-[#24292F]/90 focus:ring-4 focus:outline-none focus:ring-[#24292F]/50 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center mr-2 mb-2"
           onClick={() => signIn('github')}
         >
           <svg

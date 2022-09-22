@@ -15,10 +15,10 @@ const WaitingModal = ({ close }: { close: () => void }) => {
         role="dialog"
       >
         <div className="relative p-4 w-full max-w-md h-full md:h-auto">
-          <div className="relative bg-white rounded-lg shadow dark:bg-gray-700">
+          <div className="relative bg-white rounded-lg shadow ">
             <button
               type="button"
-              className="absolute top-3 right-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-800 dark:hover:text-white"
+              className="absolute top-3 right-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center "
               data-modal-toggle="popup-modal"
               onClick={close}
             >
@@ -39,13 +39,13 @@ const WaitingModal = ({ close }: { close: () => void }) => {
             </button>
             <div className="p-6 text-center flex flex-col items-center">
               <BallAnimation />
-              <h3 className="mt-2 mb-5 text-lg font-normal text-gray-500 dark:text-gray-400">
+              <h3 className="mt-2 mb-5 text-lg font-normal text-gray-500 ">
                 Waiting for player to accept invitation
               </h3>
               <button
                 data-modal-toggle="popup-modal"
                 type="button"
-                className="text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-gray-200 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-600"
+                className="text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-gray-200 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10 "
                 onClick={close}
               >
                 Cancel
