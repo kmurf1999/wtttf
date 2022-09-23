@@ -93,8 +93,12 @@ async function insertGameResult(
       loserRating,
     },
     select: {
+      id: true,
       winner: {
-        name: true,
+        select: {
+          id: true,
+          name: true,
+        },
       },
     },
   });
@@ -227,7 +231,7 @@ export const playRouter = createProtectedRouter()
       });
       const consecutiveWins = await getConsecutiveWins(
         ctx.prisma,
-        gameResult.winnerId,
+        gameResult.winner.id,
       );
       postHotStreak(consecutiveWins, gameResult.winner.name);
       // add result id to event
@@ -262,7 +266,7 @@ export const playRouter = createProtectedRouter()
       });
       const consecutiveWins = await getConsecutiveWins(
         ctx.prisma,
-        gameResult.winnerId,
+        gameResult.winner.id,
       );
       postHotStreak(consecutiveWins, gameResult.winner.name);
       // add result id to event

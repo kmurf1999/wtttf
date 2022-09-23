@@ -18,7 +18,7 @@ export function postHotStreak(wins: number, name: string) {
       body: JSON.stringify(message),
       headers: {
         'Content-Type': 'application/json',
-        Authorization: env.SLACK_AUTH_TOKEN,
+        Authorization: `Bearer ${env.SLACK_AUTH_TOKEN}`,
       },
     });
   }
