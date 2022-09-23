@@ -1,7 +1,9 @@
+import { env } from '../env/server';
+
 export function postHotStreak(wins: number, name: string) {
   if (wins >= 3) {
     const message = {
-      channel: process.env.NEXT_SLACK_CHANNEL_ID,
+      channel: env.SLACK_CHANNEL_ID,
       text: `:eyes: Look out! ${name} is out for your Elo :scream:! They're on a ${wins} game win streak, it's time for someone to dethrone them :ping-pong::rage:`,
     };
 
@@ -16,7 +18,7 @@ export function postHotStreak(wins: number, name: string) {
       body: JSON.stringify(message),
       headers: {
         'Content-Type': 'application/json',
-        Authorization: process.env.NEXT_SLACK_AUTH_TOKEN?.toString() ?? '',
+        Authorization: env.SLACK_AUTH_TOKEN,
       },
     });
   }

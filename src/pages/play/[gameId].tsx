@@ -48,7 +48,7 @@ const PendingGameResult = ({
 }: {
   fromMe: boolean;
   gameId: string;
-  winner: { name?: string | null; score?: number; id?: string };
+  winner: { name?: string | null; score?: number };
   loser: { name?: string | null; score?: number };
 }) => {
   const declineResult = trpc.useMutation(['game.play.rejectGameResult']);
@@ -80,19 +80,6 @@ const PendingGameResult = ({
             className="btn btn-sm btn-primary"
             onClick={() => {
               acceptResult.mutate({ gameId });
-              // post message to slack channel if winner is on a win streak
-              const consecutiveWins = trpc.useQuery(
-                ['game.history.getConsecutiveWins', { userId: winner.id! }],
-                {
-                  enabled: !!winner.id,
-                },
-              );
-              if (consecutiveWins.data) {
-                postHotStreak(
-                  consecutiveWins.data.wins,
-                  consecutiveWins.data.name,
-                );
-              }
             }}
           >
             Accept
@@ -235,7 +222,6 @@ const CurrentGame = ({ gameId }: { gameId: string }) => {
                   (p) => p.id === gameState.data.result?.winnerId,
                 )?.name,
                 score: gameState.data.result.winnerScore,
-                id: gameState.data.result?.winnerId,
               }}
               // TODO
               loser={{

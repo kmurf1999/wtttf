@@ -3,8 +3,35 @@ import * as trpc from '@trpc/server';
 import superjson from 'superjson';
 import z from 'zod';
 import { calcRating } from '../../../utils/rating';
+import { postHotStreak } from '../../../utils/slackMessages';
 import { GameState, parseGame } from '../../gameState';
 import { createProtectedRouter } from '../context';
+
+export async function getConsecutiveWins(prisma: PrismaClient, userId: string) {
+  const lastLoss = await prisma.gameResult.findFirst({
+    orderBy: [{ date: 'desc' }],
+    where: {
+      loserId: userId,
+    },
+    select: {
+      date: true,
+    },
+  });
+  const winsSinceLastLoss = await prisma.gameResult.count({
+    where: {
+      AND: [
+        { winnerId: userId },
+        {
+          date: {
+            gt: lastLoss?.date ?? new Date(0),
+          },
+        },
+      ],
+    },
+  });
+
+  return winsSinceLastLoss;
+}
 
 async function insertGameResult(
   prisma: PrismaClient,
@@ -64,6 +91,11 @@ async function insertGameResult(
       loserId,
       loserScore,
       loserRating,
+    },
+    select: {
+      winner: {
+        name: true,
+      },
     },
   });
   const gameUpdate = prisma.game.delete({
@@ -193,6 +225,11 @@ export const playRouter = createProtectedRouter()
         gameId: input.gameId,
         ...nextState.data.result,
       });
+      const consecutiveWins = await getConsecutiveWins(
+        ctx.prisma,
+        gameResult.winnerId,
+      );
+      postHotStreak(consecutiveWins, gameResult.winner.name);
       // add result id to event
       // TODO this should be in resign function
       nextState.data.resultId = gameResult.id;
@@ -223,6 +260,11 @@ export const playRouter = createProtectedRouter()
         gameId: input.gameId,
         ...nextState.data.result,
       });
+      const consecutiveWins = await getConsecutiveWins(
+        ctx.prisma,
+        gameResult.winnerId,
+      );
+      postHotStreak(consecutiveWins, gameResult.winner.name);
       // add result id to event
       // TODO this should be in resign function
       nextState.data.resultId = gameResult.id;

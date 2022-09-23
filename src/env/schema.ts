@@ -14,6 +14,8 @@ export const serverSchema = z.object({
   GITHUB_CLIENT_SECRET: z.string(),
   GOOGLE_CLIENT_ID: z.string(),
   GOOGLE_CLIENT_SECRET: z.string(),
+  SLACK_AUTH_TOKEN: z.string(),
+  SLACK_CHANNEL_ID: z.string(),
 });
 
 /**
