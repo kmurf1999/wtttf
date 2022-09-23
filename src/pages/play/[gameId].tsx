@@ -8,6 +8,7 @@ import { useState } from 'react';
 import Layout from '../../components/Layout';
 import { getServerAuthSession } from '../../server/common/get-server-auth-session';
 import { AppRouter } from '../../server/router';
+import { postHotStreak } from '../../utils/slackMessages';
 import { trpc } from '../../utils/trpc';
 
 type GameState = inferSubscriptionOutput<
@@ -47,7 +48,7 @@ const PendingGameResult = ({
 }: {
   fromMe: boolean;
   gameId: string;
-  winner: { name?: string | null; score?: number };
+  winner: { name?: string | null; score?: number; id?: string };
   loser: { name?: string | null; score?: number };
 }) => {
   const declineResult = trpc.useMutation(['game.play.rejectGameResult']);
@@ -77,7 +78,22 @@ const PendingGameResult = ({
         <div className="flex flex-col p-4 gap-2">
           <button
             className="btn btn-sm btn-primary"
-            onClick={() => acceptResult.mutate({ gameId })}
+            onClick={() => {
+              acceptResult.mutate({ gameId });
+              // post message to slack channel if winner is on a win streak
+              const consecutiveWins = trpc.useQuery(
+                ['game.history.getConsecutiveWins', { userId: winner.id! }],
+                {
+                  enabled: !!winner.id,
+                },
+              );
+              if (consecutiveWins.data) {
+                postHotStreak(
+                  consecutiveWins.data.wins,
+                  consecutiveWins.data.name,
+                );
+              }
+            }}
           >
             Accept
           </button>
@@ -219,6 +235,7 @@ const CurrentGame = ({ gameId }: { gameId: string }) => {
                   (p) => p.id === gameState.data.result?.winnerId,
                 )?.name,
                 score: gameState.data.result.winnerScore,
+                id: gameState.data.result?.winnerId,
               }}
               // TODO
               loser={{
