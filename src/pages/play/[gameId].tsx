@@ -77,7 +77,9 @@ const PendingGameResult = ({
         <div className="flex flex-col p-4 gap-2">
           <button
             className="btn btn-sm btn-primary"
-            onClick={() => acceptResult.mutate({ gameId })}
+            onClick={() => {
+              acceptResult.mutate({ gameId });
+            }}
           >
             Accept
           </button>
