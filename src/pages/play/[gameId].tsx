@@ -8,7 +8,6 @@ import { useState } from 'react';
 import Layout from '../../components/Layout';
 import { getServerAuthSession } from '../../server/common/get-server-auth-session';
 import { AppRouter } from '../../server/router';
-import { postHotStreak } from '../../utils/slackMessages';
 import { trpc } from '../../utils/trpc';
 
 type GameState = inferSubscriptionOutput<
