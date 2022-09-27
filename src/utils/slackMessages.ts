@@ -13,6 +13,7 @@ export function postHotStreak(wins: number, name: string) {
 
     // TODO - more variety of messages?
 
+    /*
     fetch('https://slack.com/api/chat.postMessage', {
       method: 'POST',
       body: JSON.stringify(message),
@@ -21,5 +22,6 @@ export function postHotStreak(wins: number, name: string) {
         Authorization: `Bearer ${env.SLACK_AUTH_TOKEN}`,
       },
     });
+    */
   }
 }
