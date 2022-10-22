@@ -117,4 +117,4 @@ DATABASE_URL=mysql://root:1234@localhost:6033/pong
 REDIS_URL=redis://localhost:6379
 ```
 
-4. Debug the app using the `Run npm run dev` debug launch. Set breakpoints, run the app, and enjoy using the vscode debugger.
+4. Debug the app using the `npm run dev` debug launch. Set breakpoints, run the app, and enjoy using the vscode debugger.
