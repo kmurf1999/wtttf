@@ -87,3 +87,34 @@ Finally, you need to rebuild the application and start it
 ```bash
 docker compose up --build app
 ```
+
+## Debugging
+
+If you'd like to use VSCode to debug on the server side, you can follow these instructions.
+
+1. Add a .vscode/launch.json file. Add the following code to the file:
+
+```
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "command": "npm run dev",
+      "name": "npm run dev",
+      "request": "launch",
+      "type": "node-terminal"
+    }
+  ]
+}
+```
+
+2. Run the DB and Redis locally: `docker compose up redis db`
+
+3. Change your .env file to point to Redis and MySQL hosted using docker:
+
+```
+DATABASE_URL=mysql://root:1234@localhost:6033/pong
+REDIS_URL=redis://localhost:6379
+```
+
+4. Debug the app using the `Run npm run dev` debug launch. Set breakpoints, run the app, and enjoy using the vscode debugger.
