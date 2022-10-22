@@ -45,3 +45,4 @@ yarn-error.log*
 
 #random dccache that keeps popping up
 .dccache
+.vscode/launch.json
