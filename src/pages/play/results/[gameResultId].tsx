@@ -1,4 +1,8 @@
-import { ArrowLeftIcon } from '@heroicons/react/24/solid';
+import {
+  ArrowLeftIcon,
+  ArrowDownIcon,
+  ArrowUpIcon,
+} from '@heroicons/react/24/solid';
 import { GetServerSidePropsContext, NextPage } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -11,11 +15,16 @@ const Player = ({
   name,
   image,
   rating,
+  previousRating,
 }: {
   name: string;
   image: string;
   rating: number;
+  previousRating: number;
 }) => {
+  const ratingRound = Math.round(rating);
+  const previousRatingRound = Math.round(previousRating);
+  const ratingDiff = ratingRound - previousRatingRound;
   return (
     <div className="text-center">
       <div className="avatar">
@@ -24,7 +33,21 @@ const Player = ({
         </div>
       </div>
       <div className="text-gray-800">{name}</div>
-      <div className="text-gray-400 font-mono">{Math.round(rating)}</div>
+      <div className="text-gray-400 font-mono w-40">
+        <span>{ratingRound} </span>
+        {ratingDiff > 0 && (
+          <span className="text-green-400">
+            (<ArrowUpIcon className="w-4 h-4 inline" />
+            {ratingDiff})
+          </span>
+        )}
+        {ratingDiff <= 0 && (
+          <span className="text-red-400">
+            (<ArrowDownIcon className="w-4 h-4 inline" />
+            {Math.abs(ratingDiff)})
+          </span>
+        )}
+      </div>
     </div>
   );
 };
@@ -59,6 +82,7 @@ const GameResult = ({ id }: { id: string }) => {
             name={winner.name!}
             image={winner.image!}
             rating={winner.rating}
+            previousRating={winner.previousRating}
           />
           <div className="rounded-lg w-16  px-0 py-1  text-center text-4xl">
             {winnerScore}
@@ -71,6 +95,7 @@ const GameResult = ({ id }: { id: string }) => {
             name={loser.name!}
             image={loser.image!}
             rating={loser.rating}
+            previousRating={loser.previousRating}
           />
         </div>
       </div>
