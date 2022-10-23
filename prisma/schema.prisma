@@ -57,6 +57,7 @@ model User {
   image         String @default("/user-profile.webp")
   accounts      Account[]
   sessions      Session[]
+  isActive      Boolean @default(true)
   createdAt     DateTime @default(now())
 
   rating Float @default(1000)

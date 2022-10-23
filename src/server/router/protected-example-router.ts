@@ -1,14 +1,14 @@
-import z from "zod";
-import { createProtectedRouter } from "./context";
+import z from 'zod';
+import { createProtectedRouter } from './context';
 
 // Example router with queries that can only be hit if the user requesting is signed in
 export const protectedExampleRouter = createProtectedRouter()
-  .query("getSession", {
+  .query('getSession', {
     resolve({ ctx }) {
       return ctx.session;
     },
   })
-  .query("getUsersByName", {
+  .query('getUsersByName', {
     input: z.object({
       name: z.string(),
     }),
@@ -17,6 +17,7 @@ export const protectedExampleRouter = createProtectedRouter()
         where: {
           name: { contains: input.name },
           id: { not: ctx.session.user.id },
+          isActive: true,
         },
         select: {
           id: true,

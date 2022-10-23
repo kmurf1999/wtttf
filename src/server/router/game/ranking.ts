@@ -17,6 +17,7 @@ export const rankingRouter = createRouter()
           rating: 'desc',
         },
         where: {
+          isActive: true,
           OR: [
             {
               wins: {
