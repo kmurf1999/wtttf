@@ -66,6 +66,14 @@ docker compose up
 
 After the build is complete you should be able to visit the application on `localhost:3000`
 
+#### 4. Add data to be able to create a game and invite player
+
+To be able to create a new game, invite a player, and accept invitations there are a few edits to the database necessary. An easy way to manage data in the database is to use prisma studio: `npx prisma studio`.
+
+After you've authenticated via GitHub, Google, etc., you'll have a `User` record created in the database. To invite another user, add a record to the `User` table. This new user should show up in the invitation list.
+
+After you've sent an invitation, you'll see a new record in the `GameInvite` table. Switch the `from` and `to` column so that the invitation is coming "from" the user you created, and "to" your user that you're logged in with. Now you can join the game that the other user invited you to: http://localhost:3000/play/join by accepting the invitation. You should now have an active game and be able to leave, track scores, and submit results.
+
 ## Migrations
 
 After making changes to the database schema, you'll need to create and apply a new migration.
