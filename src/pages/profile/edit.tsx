@@ -9,6 +9,7 @@ import Link from 'next/link';
 
 const schema = z.object({
   name: z.string(),
+  isActive: z.string(),
 });
 
 const Profile: NextPage = () => {
@@ -18,6 +19,7 @@ const Profile: NextPage = () => {
     register,
     handleSubmit,
     formState: { errors },
+    setValue,
   } = useForm<z.infer<typeof schema>>({
     resolver: zodResolver(schema),
   });
@@ -26,8 +28,14 @@ const Profile: NextPage = () => {
   const updateUserInfo = trpc.useMutation(['user.updateUserInfo'], {
     onSuccess: () => {
       context.invalidateQueries(['user.get']);
+      reloadSession();
     },
   });
+
+  const reloadSession = () => {
+    const event = new Event('visibilitychange');
+    document.dispatchEvent(event);
+  };
 
   if (!user) {
     // loading state
@@ -68,6 +76,30 @@ const Profile: NextPage = () => {
               className="btn btn-primary"
             />
           </div>
+          {user.isActive && (
+            <div className="flex flex-row">
+              <button
+                className="btn btn-md bg-red-500 border-none text-white"
+                onClick={(e) => {
+                  setValue('isActive', 'false', { shouldDirty: true });
+                }}
+              >
+                De-activate Profile
+              </button>
+            </div>
+          )}
+          {!user.isActive && (
+            <div className="flex flex-row">
+              <button
+                className="btn btn-md bg-green-500 border-none text-white"
+                onClick={(e) => {
+                  setValue('isActive', 'true', { shouldDirty: true });
+                }}
+              >
+                Re-activate Profile
+              </button>
+            </div>
+          )}
         </form>
       </div>
     </Layout>

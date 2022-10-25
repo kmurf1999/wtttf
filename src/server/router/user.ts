@@ -7,6 +7,7 @@ const protectedRouter = createProtectedRouter()
   .mutation('updateUserInfo', {
     input: z.object({
       name: z.string(),
+      isActive: z.string(),
     }),
     resolve: async ({ ctx, input }) => {
       return await ctx.prisma.user.update({
@@ -15,6 +16,7 @@ const protectedRouter = createProtectedRouter()
         },
         data: {
           name: input.name,
+          isActive: input.isActive === 'true' ? true : false,
         },
       });
     },
@@ -38,6 +40,7 @@ const router = createRouter()
           image: true,
           rating: true,
           createdAt: true,
+          isActive: true,
           _count: {
             select: {
               wins: true,
